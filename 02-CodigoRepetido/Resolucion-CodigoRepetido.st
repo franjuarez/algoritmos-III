@@ -21,9 +21,9 @@ TestCase subclass: #CustomerBookTest
 	poolDictionaries: ''
 	category: 'CodigoRepetido-Ejercicio'!
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'NR 4/3/2019 10:50:19'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'pa 4/29/2022 23:58:51'!
 test01AddingCustomerShouldNotTakeMoreThan50Milliseconds
-
+	"
 	| customerBook millisecondsBeforeRunning millisecondsAfterRunning |
 	
 	customerBook := CustomerBook new.
@@ -33,12 +33,17 @@ test01AddingCustomerShouldNotTakeMoreThan50Milliseconds
 	millisecondsAfterRunning := Time millisecondClockValue * millisecond.
 	
 	self assert: (millisecondsAfterRunning-millisecondsBeforeRunning) < (50 * millisecond)
-	
+	"
+	| customerBook timeDifference JohnLennon |
+	customerBook := CustomerBook new.
+	JohnLennon := 'John Lennon'.
+	timeDifference := self timeDifferenceAfter: [customerBook addCustomerNamed: JohnLennon].
+	self assert: timeDifference < (50 * millisecond).
 ! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'NR 4/3/2019 10:50:13'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'pa 4/29/2022 22:05:23'!
 test02RemovingCustomerShouldNotTakeMoreThan100Milliseconds
-
+"
 	| customerBook millisecondsBeforeRunning millisecondsAfterRunning paulMcCartney |
 	
 	customerBook := CustomerBook new.
@@ -51,24 +56,31 @@ test02RemovingCustomerShouldNotTakeMoreThan100Milliseconds
 	millisecondsAfterRunning := Time millisecondClockValue * millisecond.
 	
 	self assert: (millisecondsAfterRunning-millisecondsBeforeRunning) < (100 * millisecond)
+	"
+	| customerBook delta paulMcCartney |
+	customerBook := CustomerBook new.
+	paulMcCartney := 'Paul McCartney'.
 	
+	customerBook addCustomerNamed: paulMcCartney.
+	delta := self timeDifferenceAfter: [customerBook removeCustomerNamed: paulMcCartney].
+	self assert: delta < (100 * millisecond).
 ! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'HernanWilkinson 5/9/2012 18:12'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'pa 4/30/2022 00:25:10'!
 test03CanNotAddACustomerWithEmptyName 
 
 	| customerBook |
 			
 	customerBook := CustomerBook new.
 
-	[ customerBook addCustomerNamed: ''.
-	self fail ]
+	[ customerBook addCustomerNamed: ''. 
+	self fail]
 		on: Error 
 		do: [ :anError | 
 			self assert: anError messageText = CustomerBook customerCanNotBeEmptyErrorMessage.
 			self assert: customerBook isEmpty ]! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'HAW 8/28/2017 08:57:25'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'pa 4/30/2022 00:23:35'!
 test04CanNotRemoveAnInvalidCustomer
 	
 	| customerBook johnLennon |
@@ -77,15 +89,17 @@ test04CanNotRemoveAnInvalidCustomer
 	johnLennon := 'John Lennon'.
 	customerBook addCustomerNamed: johnLennon.
 	
-	[ customerBook removeCustomerNamed: 'Paul McCartney'.
-	self fail ]
+	[ customerBook removeCustomerNamed: 'Paul McCartney'. 
+	self fail] 
 		on: NotFound 
 		do: [ :anError | 
 			self assert: customerBook numberOfCustomers = 1.
 			self assert: (customerBook includesCustomerNamed: johnLennon) ]
+		
+	"chechIfAction: action failsDueToError: error andConditionIsMet: condition ???"
 ! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'NR 4/3/2019 10:50:25'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'pa 4/29/2022 23:32:06'!
 test05SuspendingACustomerShouldNotRemoveItFromCustomerBook
 
 	| customerBook paulMcCartney|
@@ -105,7 +119,7 @@ test05SuspendingACustomerShouldNotRemoveItFromCustomerBook
 	
 ! !
 
-!CustomerBookTest methodsFor: 'testing' stamp: 'NR 4/3/2019 10:50:28'!
+!CustomerBookTest methodsFor: 'testing' stamp: 'pa 4/29/2022 23:49:57'!
 test06RemovingASuspendedCustomerShouldRemoveItFromCustomerBook
 
 	| customerBook paulMcCartney|
@@ -121,8 +135,12 @@ test06RemovingASuspendedCustomerShouldRemoveItFromCustomerBook
 	self assert: 0 equals: customerBook numberOfSuspendedCustomers.
 	self assert: 0 equals: customerBook numberOfCustomers.
 	self deny: (customerBook includesCustomerNamed: paulMcCartney).
-
-
+	
+	"
+	for i 
+	self assert: valor[i] equals: customerBook mensaje[i]
+	self deny: (customerBook mensaje: paulMcCartney
+	"
 	
 ! !
 
@@ -160,6 +178,33 @@ test08CanNotSuspendAnAlreadySuspendedCustomer
 			self assert: customerBook numberOfCustomers = 1.
 			self assert: (customerBook includesCustomerNamed: johnLennon) ]
 ! !
+
+
+!CustomerBookTest methodsFor: 'testing_aux' stamp: 'pa 4/30/2022 00:28:11'!
+checkIfAction: action failsDueToError: error andConditionsAreMet: condition
+	! !
+
+!CustomerBookTest methodsFor: 'testing_aux' stamp: 'pa 4/30/2022 00:33:21'!
+checkValuesOfActiveCostumers: var1 aaa: var2 libro: customerBook
+	self assert: var1 equals: customerBook numberOfActiveCustomers.
+	self assert: var2 equals: customerBook numberOfSuspendedCustomers.
+	self assert: var1 + var2 equals: customerBook numberOfCustomers.! !
+
+!CustomerBookTest methodsFor: 'testing_aux' stamp: 'pa 4/29/2022 23:35:35'!
+chequearValores
+	! !
+
+!CustomerBookTest methodsFor: 'testing_aux' stamp: 'pa 4/30/2022 00:28:38'!
+chequearValores: coleccionDeValores mensaje: mensaje
+	! !
+
+!CustomerBookTest methodsFor: 'testing_aux' stamp: 'pa 4/29/2022 22:09:53'!
+timeDifferenceAfter: closure
+	| timeDifference |.
+	timeDifference := Time millisecondClockValue * millisecond.
+	closure .
+	^timeDifference - (Time millisecondClockValue * millisecond).
+	! !
 
 
 !classDefinition: #CustomerBook category: 'CodigoRepetido-Ejercicio'!
