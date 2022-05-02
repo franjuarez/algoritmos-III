@@ -96,9 +96,9 @@ assertIfCustomerBookHasExpectedNumberOfActiveCustomers: expectedNumberOfActiveCu
 	result := result and: [expectedNumberOfActiveCustomers + expectedNumberOfSuspendedCustomers = customerBook numberOfCustomers].
 	self assert: result.! !
 
-!CustomerBookTest methodsFor: 'assertions' stamp: 'pa 5/1/2022 21:06:52'!
+!CustomerBookTest methodsFor: 'assertions' stamp: 'pa 5/1/2022 21:30:43'!
 assertIfOperation: operation failsDueToError: error andMeetsConditions: conditions
-	[operation. self fail]
+	[operation value. self fail]
 		on: error 
 		do: [ :anError | self assert: (conditions value: anError)].! !
 
