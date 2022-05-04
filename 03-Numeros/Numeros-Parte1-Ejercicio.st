@@ -147,21 +147,11 @@ Object subclass: #Numero
 	self error: 'Tipo de número no soportado'
 	! !
 
-!Numero methodsFor: 'arithmetic operations' stamp: 'pa 5/2/2022 21:38:39'!
+!Numero methodsFor: 'arithmetic operations' stamp: 'FRJ 5/3/2022 23:18:43'!
 + anAdder 
 	
-	(type = #Entero and: [anAdder type = #Entero]) ifTrue:
-		[ ^self class with: value + anAdder integerValue ].
+	^self subclassResponsibility.
 	
-	(type = #Fraccion and: [anAdder type = #Fraccion]) ifTrue:
-		[ | newNumerator newDenominator |
-		
-		newNumerator := (numerator * anAdder denominator) + (denominator * anAdder numerator).
-		newDenominator := denominator * anAdder denominator.
-		
-		^ self class with: newNumerator over: newDenominator ].
-	
-	self error: 'Tipo de número no soportado'
 	! !
 
 !Numero methodsFor: 'arithmetic operations' stamp: 'pa 5/2/2022 21:38:39'!
@@ -323,6 +313,11 @@ Numero subclass: #Entero
 	poolDictionaries: ''
 	category: 'Numeros-Parte1-Ejercicio'!
 
+!Entero methodsFor: 'testing' stamp: 'FRJ 5/3/2022 23:23:46'!
++ anAdder
+
+	^anAdder sumaPorEntero: self.! !
+
 !Entero methodsFor: 'testing' stamp: 'pa 5/2/2022 21:55:22'!
 isNegative
 	^value < 0.! !
@@ -335,6 +330,18 @@ isOne
 isZero
 	^value = 0.! !
 
+!Entero methodsFor: 'testing' stamp: 'FRJ 5/3/2022 23:23:46'!
+sumaPorEntero: entero
+
+	^self class with: value + entero integerValue 
+! !
+
+!Entero methodsFor: 'testing' stamp: 'FRJ 5/3/2022 23:45:19'!
+sumaPorFraccion: fraccion
+
+	^self error: 'Tipo de número no soportado'.
+! !
+
 
 !classDefinition: #Fraccion category: 'Numeros-Parte1-Ejercicio'!
 Numero subclass: #Fraccion
@@ -342,6 +349,12 @@ Numero subclass: #Fraccion
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Numeros-Parte1-Ejercicio'!
+
+!Fraccion methodsFor: 'testing' stamp: 'FRJ 5/3/2022 23:45:04'!
++ anAdder
+
+	^anAdder sumaPorFraccion: self.
+! !
 
 !Fraccion methodsFor: 'testing' stamp: 'pa 5/2/2022 21:55:22'!
 isNegative
@@ -354,3 +367,18 @@ isOne
 !Fraccion methodsFor: 'testing' stamp: 'pa 5/2/2022 21:37:42'!
 isZero
 	^false! !
+
+!Fraccion methodsFor: 'testing' stamp: 'FRJ 5/3/2022 23:45:28'!
+sumaPorEntero: entero
+
+	^self error: 'Tipo de número no soportado'! !
+
+!Fraccion methodsFor: 'testing' stamp: 'FRJ 5/3/2022 23:45:50'!
+sumaPorFraccion: fraccion
+
+	| newNumerator newDenominator |
+		
+	newNumerator := (numerator * fraccion denominator) + (denominator * fraccion numerator).
+	newDenominator := denominator * fraccion denominator.
+		
+	^ self class with: newNumerator over: newDenominator.! !
