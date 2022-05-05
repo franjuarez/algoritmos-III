@@ -107,7 +107,7 @@ test17SignIsCorrectlyAssignedToFractionWithNegativeDivisor
 	self assert: oneHalf negated equals: (Numero with: one over: negativeTwo)! !
 
 
-!NumeroTest methodsFor: 'setup' stamp: 'pa 5/2/2022 21:50:05'!
+!NumeroTest methodsFor: 'setup' stamp: 'FRJ 5/4/2022 22:49:32'!
 setUp
 
 	zero := Numero with: 0 .
@@ -135,16 +135,10 @@ Object subclass: #Numero
 	poolDictionaries: ''
 	category: 'Numeros-Parte1-Ejercicio'!
 
-!Numero methodsFor: 'arithmetic operations' stamp: 'pa 5/2/2022 21:38:38'!
+!Numero methodsFor: 'arithmetic operations' stamp: 'FRJ 5/4/2022 22:23:23'!
 * aMultiplier 
 
-	(type = #Entero and: [aMultiplier type = #Entero]) ifTrue:	
-		[ ^self class with: value * aMultiplier integerValue ].
-		
-	(type = #Fraccion and: [aMultiplier type = #Fraccion]) ifTrue:
-		[ ^self class with: (numerator * aMultiplier numerator) over: (denominator * aMultiplier denominator) ].
-		
-	self error: 'Tipo de número no soportado'
+	^self subclassResponsibility.
 	! !
 
 !Numero methodsFor: 'arithmetic operations' stamp: 'FRJ 5/3/2022 23:18:43'!
@@ -154,22 +148,16 @@ Object subclass: #Numero
 	
 	! !
 
-!Numero methodsFor: 'arithmetic operations' stamp: 'pa 5/2/2022 21:38:39'!
+!Numero methodsFor: 'arithmetic operations' stamp: 'FRJ 5/4/2022 22:27:06'!
 negated
 	
-	type = #Entero ifTrue:
-		[ ^self * (self class with: -1) ].
-	type = #Fraccion ifTrue:
-		[ ^self class with: numerator * (self class with: -1) over: denominator ].! !
+	^self subclassResponsibility.! !
 
 
-!Numero methodsFor: 'testing' stamp: 'pa 5/2/2022 21:54:18'!
+!Numero methodsFor: 'testing' stamp: 'FRJ 5/4/2022 22:28:18'!
 isNegative
 	
-	type = #Entero ifTrue:
-		[ ^value < 0 ].
-	type = #Fraccion ifTrue:
-		[  ].! !
+	^self subclassResponsibility.! !
 
 !Numero methodsFor: 'testing' stamp: 'pa 5/2/2022 21:51:41'!
 isOne
@@ -181,7 +169,7 @@ isZero
 	self subclassResponsibility .! !
 
 
-!Numero methodsFor: 'initialization' stamp: 'pa 5/2/2022 21:38:23'!
+!Numero methodsFor: 'initialization' stamp: 'FRJ 5/4/2022 22:30:06'!
 initializeWith: aValue
 	
 	type := #Entero.
@@ -222,17 +210,18 @@ type
 	^type! !
 
 
-!Numero methodsFor: 'printing' stamp: 'pa 5/2/2022 21:38:39'!
+!Numero methodsFor: 'printing' stamp: 'FRJ 5/4/2022 22:53:42'!
 printOn: aStream
 	
-	type = #Entero ifTrue:
+	"type = #Entero ifTrue:
 		[ aStream print: value ].
 	
 	type = #Fraccion ifTrue:
 		[ aStream 
 			print: numerator;
 			nextPut: $/;
-			print: denominator ].! !
+			print: denominator ]."
+	^self subclassResponsibility.! !
 
 
 !Numero methodsFor: 'comparing' stamp: 'pa 5/2/2022 21:38:39'!
@@ -279,12 +268,12 @@ canNotDivideByZeroErrorDescription
 	^'No se puede dividir por cero'! !
 
 
-!Numero class methodsFor: 'instance creation' stamp: 'pa 5/2/2022 21:48:33'!
+!Numero class methodsFor: 'instance creation' stamp: 'FRJ 5/4/2022 23:14:47'!
 with: aValue 
 	
 	"Esta verificacion esta puesta por si se equivocan y quieren crear un Entero pasando otra cosa que un Integer - Hernan"
 	aValue isInteger ifFalse: [  self error: 'aValue debe ser anInteger' ].
-	
+
 	^Entero new initializeWith: aValue! !
 
 !Numero class methodsFor: 'instance creation' stamp: 'pa 5/2/2022 21:49:02'!
@@ -313,13 +302,24 @@ Numero subclass: #Entero
 	poolDictionaries: ''
 	category: 'Numeros-Parte1-Ejercicio'!
 
+!Entero methodsFor: 'testing' stamp: 'FRJ 5/4/2022 22:19:14'!
+* aMultiplier
+
+	^aMultiplier multiplicarPorEntero: self.! !
+
 !Entero methodsFor: 'testing' stamp: 'FRJ 5/3/2022 23:23:46'!
 + anAdder
 
 	^anAdder sumaPorEntero: self.! !
 
-!Entero methodsFor: 'testing' stamp: 'pa 5/2/2022 21:55:22'!
+!Entero methodsFor: 'testing' stamp: 'FRJ 5/4/2022 22:37:47'!
+isInteger
+
+	! !
+
+!Entero methodsFor: 'testing' stamp: 'FRJ 5/4/2022 22:27:34'!
 isNegative
+
 	^value < 0.! !
 
 !Entero methodsFor: 'testing' stamp: 'pa 5/2/2022 21:52:59'!
@@ -329,6 +329,29 @@ isOne
 !Entero methodsFor: 'testing' stamp: 'pa 5/2/2022 21:38:53'!
 isZero
 	^value = 0.! !
+
+!Entero methodsFor: 'testing' stamp: 'FRJ 5/4/2022 22:20:33'!
+multiplicarPorEntero: entero
+
+	^self class with: value * entero integerValue 
+! !
+
+!Entero methodsFor: 'testing' stamp: 'FRJ 5/4/2022 22:21:50'!
+multiplicarPorFraccion: entero
+
+	^self error: 'Tipo de número no soportado'.
+! !
+
+!Entero methodsFor: 'testing' stamp: 'FRJ 5/4/2022 22:25:35'!
+negated
+
+	^self * (self class with: -1)
+! !
+
+!Entero methodsFor: 'testing' stamp: 'FRJ 5/4/2022 22:52:21'!
+printOn: aStream
+
+	aStream print: value.! !
 
 !Entero methodsFor: 'testing' stamp: 'FRJ 5/3/2022 23:23:46'!
 sumaPorEntero: entero
@@ -350,14 +373,20 @@ Numero subclass: #Fraccion
 	poolDictionaries: ''
 	category: 'Numeros-Parte1-Ejercicio'!
 
+!Fraccion methodsFor: 'testing' stamp: 'FRJ 5/4/2022 22:24:50'!
+* aMultiplier
+
+	^aMultiplier multiplicarPorFraccion: self.! !
+
 !Fraccion methodsFor: 'testing' stamp: 'FRJ 5/3/2022 23:45:04'!
 + anAdder
 
 	^anAdder sumaPorFraccion: self.
 ! !
 
-!Fraccion methodsFor: 'testing' stamp: 'pa 5/2/2022 21:55:22'!
+!Fraccion methodsFor: 'testing' stamp: 'FRJ 5/4/2022 22:27:40'!
 isNegative
+
 	^denominator < 0! !
 
 !Fraccion methodsFor: 'testing' stamp: 'pa 5/2/2022 21:52:59'!
@@ -367,6 +396,29 @@ isOne
 !Fraccion methodsFor: 'testing' stamp: 'pa 5/2/2022 21:37:42'!
 isZero
 	^false! !
+
+!Fraccion methodsFor: 'testing' stamp: 'FRJ 5/4/2022 22:22:05'!
+multiplicarPorEntero: entero
+
+	^self error: 'Tipo de número no soportado'.! !
+
+!Fraccion methodsFor: 'testing' stamp: 'FRJ 5/4/2022 22:22:46'!
+multiplicarPorFraccion: fraccion
+
+	^self class with: (numerator * fraccion numerator) over: (denominator * fraccion denominator).! !
+
+!Fraccion methodsFor: 'testing' stamp: 'FRJ 5/4/2022 22:26:41'!
+negated
+
+	^self class with: numerator * (self class with: -1) over: denominator.! !
+
+!Fraccion methodsFor: 'testing' stamp: 'FRJ 5/4/2022 22:53:01'!
+printOn: aStream
+
+	aStream
+	print: numerator;
+	nextPut: $/;
+	print: denominator! !
 
 !Fraccion methodsFor: 'testing' stamp: 'FRJ 5/3/2022 23:45:28'!
 sumaPorEntero: entero
