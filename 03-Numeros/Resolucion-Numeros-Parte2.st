@@ -364,10 +364,10 @@ Numero subclass: #Entero
 	poolDictionaries: ''
 	category: 'Numeros-Parte2-Ejercicio'!
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'HernanWilkinson 5/7/2016 23:13'!
+!Entero methodsFor: 'arithmetic operations' stamp: 'pa 5/6/2022 21:01:05'!
 * aMultiplier 
 	
-	^self class with: value * aMultiplier integerValue
+	^self class with: (value * aMultiplier integerValue)
 	! !
 
 !Entero methodsFor: 'arithmetic operations' stamp: 'HernanWilkinson 5/7/2016 23:13'!
@@ -386,19 +386,10 @@ Numero subclass: #Entero
 	
 	^Fraccion with: self over: aDivisor! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'HAW 9/24/2018 08:47:50'!
+!Entero methodsFor: 'arithmetic operations' stamp: 'pa 5/6/2022 23:05:14'!
 fibonacci
-
-	| one two |
 	
-	one := Entero with: 1.
-	two := Entero with: 2.
-	
-	self isNegative ifTrue: [self error: Entero negativeFibonacciErrorDescription ].	
-	(self isZero or: [self isOne]) ifTrue: [^one].
-	
-	^ (self - one) fibonacci + (self - two) fibonacci
-		! !
+	self error: Entero negativeFibonacciErrorDescription.! !
 
 
 !Entero methodsFor: 'comparing' stamp: 'HernanWilkinson 5/7/2016 21:01'!
@@ -468,11 +459,45 @@ Entero class
 negativeFibonacciErrorDescription
 	^ ' Fibonacci no está definido aquí para Enteros Negativos'! !
 
-!Entero class methodsFor: 'instance creation' stamp: 'JS 5/5/2022 03:55:37'!
+!Entero class methodsFor: 'instance creation' stamp: 'pa 5/6/2022 23:28:05'!
 with: aValue 
 	
 	"Esta verificacion esta puesta por si se equivocan y quieren crear un Entero pasando otra cosa que un Integer - Hernan"
 	aValue isInteger ifFalse: [  self error: 'aValue debe ser anInteger' ].
+	aValue >= 0 ifTrue: [ ^Naturales with: aValue].
+	
+	^self new initializeWith: aValue! !
+
+
+!classDefinition: #Naturales category: 'Numeros-Parte2-Ejercicio'!
+Entero subclass: #Naturales
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Numeros-Parte2-Ejercicio'!
+
+!Naturales methodsFor: 'as yet unclassified' stamp: 'pa 5/6/2022 23:04:44'!
+fibonacci
+	
+	| one two |
+	
+	one := Entero with: 1.
+	two := Entero with: 2.
+	
+	(self isZero or: [self isOne]) ifTrue: [^one].
+	
+	^ (self - one) fibonacci + (self - two) fibonacci
+	! !
+
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Naturales class' category: 'Numeros-Parte2-Ejercicio'!
+Naturales class
+	instanceVariableNames: ''!
+
+!Naturales class methodsFor: 'as yet unclassified' stamp: 'pa 5/6/2022 23:25:50'!
+with: aValue
 	
 	^self new initializeWith: aValue! !
 
