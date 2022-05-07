@@ -364,18 +364,16 @@ Numero subclass: #Entero
 	poolDictionaries: ''
 	category: 'Numeros-Parte2-Ejercicio'!
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'HernanWilkinson 5/7/2016 23:13'!
+!Entero methodsFor: 'arithmetic operations' stamp: 'pa 5/6/2022 21:01:05'!
 * aMultiplier 
 	
-	^self class with: value * aMultiplier integerValue
+	^self class with: (value * aMultiplier integerValue)
 	! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'FRJ 5/5/2022 20:40:31'!
+!Entero methodsFor: 'arithmetic operations' stamp: 'HernanWilkinson 5/7/2016 23:13'!
 + anAdder 
 	
-	^ anAdder beAddedToEntero: self.
-
-
+	^self class with: value + anAdder integerValue
 ! !
 
 !Entero methodsFor: 'arithmetic operations' stamp: 'NR 9/23/2018 23:40:37'!
@@ -387,18 +385,6 @@ Numero subclass: #Entero
 / aDivisor 
 	
 	^Fraccion with: self over: aDivisor! !
-
-!Entero methodsFor: 'arithmetic operations' stamp: 'FRJ 5/5/2022 20:33:29'!
-beAddedToEntero: anAugend
-
-	^self class with: value + anAugend integerValue.! !
-
-!Entero methodsFor: 'arithmetic operations' stamp: 'FRJ 5/5/2022 20:57:21'!
-beAddedToFraccion: anAugend
-	| newNumerator newDenominator |
-	newNumerator := self * anAugend denominator + anAugend numerator.
-	newDenominator := anAugend denominator.
-	^ newNumerator / newDenominator.! !
 
 !Entero methodsFor: 'arithmetic operations' stamp: 'HAW 9/24/2018 08:47:50'!
 fibonacci
@@ -413,11 +399,6 @@ fibonacci
 	
 	^ (self - one) fibonacci + (self - two) fibonacci
 		! !
-
-!Entero methodsFor: 'arithmetic operations' stamp: 'FRJ 5/5/2022 20:30:38'!
-mmmm: aaaaa
-
-	^self class with: value + aaaaa integerValue.! !
 
 
 !Entero methodsFor: 'comparing' stamp: 'HernanWilkinson 5/7/2016 21:01'!
@@ -509,10 +490,15 @@ Numero subclass: #Fraccion
 	^(numerator * aMultiplier numerator) / (denominator * aMultiplier denominator)
 	! !
 
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'FRJ 5/5/2022 21:01:49'!
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'HernanWilkinson 5/7/2016 23:14'!
 + anAdder 
 	
-	^anAdder beAddedToFraccion: self.! !
+	| newNumerator newDenominator |
+	
+	newNumerator := (numerator * anAdder denominator) + (denominator * anAdder numerator).
+	newDenominator := denominator * anAdder denominator.
+	
+	^newNumerator / newDenominator ! !
 
 !Fraccion methodsFor: 'arithmetic operations' stamp: 'NR 9/23/2018 23:43:50'!
 - aSubtrahend 
@@ -529,20 +515,6 @@ Numero subclass: #Fraccion
 / aDivisor 
 	
 	^(numerator * aDivisor denominator) / (denominator * aDivisor numerator)! !
-
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'FRJ 5/5/2022 20:42:06'!
-beAddedToEntero: anAugend
-	| newNumerator newDenominator |
-	newNumerator := anAugend * self denominator + self numerator.
-	newDenominator := self denominator.
-	^newNumerator / newDenominator.! !
-
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'FRJ 5/5/2022 20:47:31'!
-beAddedToFraccion: anAugend
-	| newNumerator newDenominator |
-	newNumerator := (numerator * anAugend denominator) + (denominator * anAugend numerator).
-	newDenominator := denominator * anAugend denominator.
-	^newNumerator / newDenominator.! !
 
 
 !Fraccion methodsFor: 'comparing' stamp: 'HernanWilkinson 5/7/2016 20:42'!
