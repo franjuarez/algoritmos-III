@@ -145,23 +145,114 @@ TestCase subclass: #SentenceFinderByPrefixTest
 	category: 'Stack-Exercise'!
 
 
-!classDefinition: #OOStack category: 'Stack-Exercise'!
-Object subclass: #OOStack
-	instanceVariableNames: 'elements'
+!classDefinition: #Node category: 'Stack-Exercise'!
+Object subclass: #Node
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
 
-!OOStack methodsFor: 'testing' stamp: 'FRJ 5/10/2022 22:11:47'!
+!Node methodsFor: 'initialization' stamp: 'FRJ 5/12/2022 20:14:22'!
+initializeWithElement: anElement andPreviouseNode: aNode
+
+	self subclassResponsibility.! !
+
+
+!Node methodsFor: 'as yet unclassified' stamp: 'FRJ 5/12/2022 20:48:41'!
+obtainElement
+
+	self subclassResponsibility .! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Node class' category: 'Stack-Exercise'!
+Node class
+	instanceVariableNames: ''!
+
+!Node class methodsFor: 'as yet unclassified' stamp: 'FRJ 5/12/2022 20:55:55'!
+withElement: anElement andPreviouseNode: aNode
+
+	self subclasses detect: [:subclass | subclass canInstance: aNode ].
+	
+	! !
+
+
+!classDefinition: #ActiveNode category: 'Stack-Exercise'!
+Node subclass: #ActiveNode
+	instanceVariableNames: 'previouseNode element'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Stack-Exercise'!
+
+!ActiveNode methodsFor: 'initialization' stamp: 'FRJ 5/12/2022 20:13:13'!
+initializeWithElement: anElement andPreviouseNode: unNodo 
+
+	element := anElement.
+	previouseNode := unNodo.! !
+
+
+!ActiveNode methodsFor: 'as yet unclassified' stamp: 'FRJ 5/12/2022 20:47:27'!
+obtainElement
+
+	^element! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'ActiveNode class' category: 'Stack-Exercise'!
+ActiveNode class
+	instanceVariableNames: ''!
+
+!ActiveNode class methodsFor: 'as yet unclassified' stamp: 'FRJ 5/12/2022 20:52:53'!
+canInstance: aNode
+	
+	^aNode class superclass isKindOf: Node.! !
+
+
+!classDefinition: #NullNode category: 'Stack-Exercise'!
+Node subclass: #NullNode
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Stack-Exercise'!
+
+!NullNode methodsFor: 'initialization' stamp: 'FRJ 5/12/2022 20:15:58'!
+initializeWithElement: anElement andPreviouseNode: unNodo ! !
+
+
+!NullNode methodsFor: 'as yet unclassified' stamp: 'FRJ 5/12/2022 20:49:06'!
+obtainElement
+
+	^nil.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'NullNode class' category: 'Stack-Exercise'!
+NullNode class
+	instanceVariableNames: ''!
+
+!NullNode class methodsFor: 'as yet unclassified' stamp: 'FRJ 5/12/2022 20:53:50'!
+canInstance: aNode
+
+	^aNode class superclass isKindOf: Node.! !
+
+
+!classDefinition: #OOStack category: 'Stack-Exercise'!
+Object subclass: #OOStack
+	instanceVariableNames: 'lastElement'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Stack-Exercise'!
+
+!OOStack methodsFor: 'testing' stamp: 'FRJ 5/12/2022 20:51:42'!
 isEmpty
 
-	^elements isEmpty.! !
+	^lastElement class isKindOf: NullNode.! !
 
 
-!OOStack methodsFor: 'initialization' stamp: 'FRJ 5/10/2022 22:09:12'!
+!OOStack methodsFor: 'initialization' stamp: 'FRJ 5/12/2022 20:50:58'!
 initialize
 
-	elements := OrderedCollection new.! !
+	lastElement := Node withElement: nil andPreviouseNode: nil.! !
 
 
 !OOStack methodsFor: 'stack operations' stamp: 'FRJ 5/10/2022 22:25:21'!
