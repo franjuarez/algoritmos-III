@@ -182,6 +182,20 @@ test03CanFindMultipleSentencesWhenThereIsMultipleValidSentences
 	self assert: [(foundSentences includes: 'Winter is here') and: [foundSentences includes: 'Winter is comming']].
 ! !
 
+!SentenceFinderByPrefixTest methodsFor: 'as yet unclassified' stamp: 'FRJ 5/14/2022 10:52:48'!
+test04CanOnlyAddStrings
+	
+	| sentenceFinder |
+	
+	sentenceFinder := SentenceFinderByPrefix new.
+	
+	self 
+	should: [ sentenceFinder add: 4 ]
+	raise: Error
+	withExceptionDo: [ :anError |
+		self assert: anError messageText = SentenceFinderByPrefix canOnlyAddStringsErrorDescription ]
+		! !
+
 
 !classDefinition: #Node category: 'Stack-Exercise'!
 Object subclass: #Node
@@ -390,28 +404,33 @@ Object subclass: #SentenceFinderByPrefix
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
 
-!SentenceFinderByPrefix methodsFor: 'as yet unclassified' stamp: 'FRJ 5/14/2022 10:24:00'!
+!SentenceFinderByPrefix methodsFor: 'initialization' stamp: 'pa 5/14/2022 00:28:03'!
+initialize
+
+	sentencesStack := OOStack new.
+	! !
+
+
+!SentenceFinderByPrefix methodsFor: 'SentenceFinder operations' stamp: 'FRJ 5/14/2022 10:50:00'!
 add: aSentence
 
-	(aSentence isKindOf: String) ifFalse: [ self error: 'Can only add strings' ].
+	(aSentence isKindOf: String) ifFalse: [ self error: self class canOnlyAddStringsErrorDescription ].
 	
 	sentencesStack push: aSentence.
 	! !
 
-!SentenceFinderByPrefix methodsFor: 'as yet unclassified' stamp: 'FRJ 5/14/2022 10:37:14'!
+!SentenceFinderByPrefix methodsFor: 'SentenceFinder operations' stamp: 'FRJ 5/14/2022 11:11:35'!
 find: aPrefix
 	
-	| invertedStack validSentences sentence result |
+	| invertedStack validSentences aSentence |
 	
 	invertedStack := OOStack new.
 	validSentences := OrderedCollection new.
 	
 	[sentencesStack isEmpty] whileFalse: [
-		result := true.
-		sentence := sentencesStack pop.
-		invertedStack push: sentence.
-		1 to: (aPrefix size) do: [:index | result := result and: [(aPrefix at: index) = (sentence at: index)] ].
-		result ifTrue: [ validSentences add: sentence ].
+		aSentence := sentencesStack pop.
+		invertedStack push: aSentence.
+		(self sentence: aSentence StartsWithPrefix: aPrefix) ifTrue: [ validSentences add: aSentence ].
 		].
 	
 	[invertedStack isEmpty] whileFalse: [
@@ -422,8 +441,25 @@ find: aPrefix
 	
 	! !
 
-!SentenceFinderByPrefix methodsFor: 'as yet unclassified' stamp: 'pa 5/14/2022 00:28:03'!
-initialize
 
-	sentencesStack := OOStack new.
-	! !
+!SentenceFinderByPrefix methodsFor: 'as yet unclassified' stamp: 'FRJ 5/14/2022 11:05:48'!
+sentence: aSentence StartsWithPrefix: aPrefix
+
+	| result |
+
+	result := true.
+	
+	1 to: (aPrefix size) do: [:index | result := result and: [(aPrefix at: index) = (aSentence at: index)] ].
+
+	^result.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'SentenceFinderByPrefix class' category: 'Stack-Exercise'!
+SentenceFinderByPrefix class
+	instanceVariableNames: ''!
+
+!SentenceFinderByPrefix class methodsFor: 'error descriptions' stamp: 'FRJ 5/14/2022 10:50:00'!
+canOnlyAddStringsErrorDescription
+
+	^'Can only add strings'! !
