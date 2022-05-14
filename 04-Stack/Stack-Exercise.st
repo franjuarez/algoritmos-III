@@ -144,7 +144,7 @@ TestCase subclass: #SentenceFinderByPrefixTest
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
 
-!SentenceFinderByPrefixTest methodsFor: 'as yet unclassified' stamp: 'pa 5/14/2022 00:28:53'!
+!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'pa 5/14/2022 00:28:53'!
 test01CantFindSentenceWhenItsEmpty
 
 	| sentenceFinder  foundSentences |
@@ -153,7 +153,7 @@ test01CantFindSentenceWhenItsEmpty
 	foundSentences := sentenceFinder find: 'Win'.
 	self assert: [ foundSentences size = 0].! !
 
-!SentenceFinderByPrefixTest methodsFor: 'as yet unclassified' stamp: 'pa 5/14/2022 00:29:10'!
+!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'pa 5/14/2022 00:29:10'!
 test02CanFindSentenceWhenItsTheOnlyOne
 
 	| sentenceFinder foundSentences |
@@ -165,7 +165,7 @@ test02CanFindSentenceWhenItsTheOnlyOne
 	
 	self assert: [foundSentences first = 'Winter is here'].! !
 
-!SentenceFinderByPrefixTest methodsFor: 'as yet unclassified' stamp: 'FRJ 5/14/2022 10:30:52'!
+!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'FRJ 5/14/2022 10:30:52'!
 test03CanFindMultipleSentencesWhenThereIsMultipleValidSentences
 
 	| sentenceFinder foundSentences |
@@ -182,7 +182,7 @@ test03CanFindMultipleSentencesWhenThereIsMultipleValidSentences
 	self assert: [(foundSentences includes: 'Winter is here') and: [foundSentences includes: 'Winter is comming']].
 ! !
 
-!SentenceFinderByPrefixTest methodsFor: 'as yet unclassified' stamp: 'FRJ 5/14/2022 10:52:48'!
+!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'FRJ 5/14/2022 12:11:15'!
 test04CanOnlyAddStrings
 	
 	| sentenceFinder |
@@ -193,8 +193,81 @@ test04CanOnlyAddStrings
 	should: [ sentenceFinder add: 4 ]
 	raise: Error
 	withExceptionDo: [ :anError |
-		self assert: anError messageText = SentenceFinderByPrefix canOnlyAddStringsErrorDescription ]
+		self assert: anError messageText = SentenceFinderByPrefix canOnlyRecieveStringsErrorDescription ]
 		! !
+
+!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'FRJ 5/14/2022 12:05:08'!
+test05PrefixesCanNotContainEmptySpaces
+	
+	| sentenceFinder |
+	
+	sentenceFinder := SentenceFinderByPrefix new.
+	
+	self 
+	should: [ sentenceFinder find: ' ' ]
+	raise: Error
+	withExceptionDo: [ :anError |
+		self assert: anError messageText = SentenceFinderByPrefix prefixesCanNotContainEmptySpacesErrorDescription ]
+		! !
+
+!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'FRJ 5/14/2022 12:05:22'!
+test06PrefixesCanNotbeEmpty
+	
+	| sentenceFinder |
+	
+	sentenceFinder := SentenceFinderByPrefix new.
+	
+	self 
+	should: [ sentenceFinder find: '' ]
+	raise: Error
+	withExceptionDo: [ :anError |
+		self assert: anError messageText = SentenceFinderByPrefix canNotSearchForAnEmptyPrefixErrorDescription ]
+		! !
+
+!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'FRJ 5/14/2022 11:46:18'!
+test07PrefixesAreKeySensitive
+	
+	| sentenceFinder  foundSentences |
+	
+	sentenceFinder := SentenceFinderByPrefix new.
+	
+	sentenceFinder add: 'Winter is here'	.
+	sentenceFinder add: 'mauasa katai'.
+	sentenceFinder add: 'winning is Everything'.
+	
+	foundSentences := sentenceFinder find: 'Win'.
+	
+	self assert: [ foundSentences size = 1 and: [foundSentences first = 'Winter is here' ]]! !
+
+!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'FRJ 5/14/2022 12:11:15'!
+test08PrefixesCanOnlyBeStrings
+	
+	| sentenceFinder |
+	
+	sentenceFinder := SentenceFinderByPrefix new.
+	
+	self 
+	should: [ sentenceFinder find: 4 ]
+	raise: Error
+	withExceptionDo: [ :anError |
+		self assert: anError messageText = SentenceFinderByPrefix canOnlyRecieveStringsErrorDescription ]
+		! !
+
+!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'FRJ 5/14/2022 12:18:01'!
+test09SentencesWithoutPrefixCanNotBeFound
+
+	| sentenceFinder foundSentences |
+	
+	sentenceFinder := SentenceFinderByPrefix new.
+	
+	sentenceFinder add: ''	.
+	sentenceFinder add: ' '	.
+	sentenceFinder add: ' Winter'.
+	
+	foundSentences := sentenceFinder find: 'Win'.
+
+	self assert: [ foundSentences isEmpty ].
+! !
 
 
 !classDefinition: #Node category: 'Stack-Exercise'!
@@ -353,7 +426,7 @@ initialize
 	size := 0! !
 
 
-!OOStack methodsFor: 'stack operations' stamp: 'pa 5/13/2022 23:43:55'!
+!OOStack methodsFor: 'operations' stamp: 'pa 5/13/2022 23:43:55'!
 pop
 
 	| poppedElement |
@@ -364,14 +437,14 @@ pop
 
 	^poppedElement .! !
 
-!OOStack methodsFor: 'stack operations' stamp: 'pa 5/13/2022 23:31:37'!
+!OOStack methodsFor: 'operations' stamp: 'pa 5/13/2022 23:31:37'!
 push: anElement
 
 	lastNode := Node withElement: anElement  andPreviouseNode: lastNode.
 	size := size + 1.
 ! !
 
-!OOStack methodsFor: 'stack operations' stamp: 'pa 5/13/2022 23:40:36'!
+!OOStack methodsFor: 'operations' stamp: 'pa 5/13/2022 23:40:36'!
 top
 	
 	lastNode ifNullNodeRaiseError: self class stackEmptyErrorDescription.
@@ -411,18 +484,20 @@ initialize
 	! !
 
 
-!SentenceFinderByPrefix methodsFor: 'SentenceFinder operations' stamp: 'FRJ 5/14/2022 10:50:00'!
+!SentenceFinderByPrefix methodsFor: 'operations' stamp: 'FRJ 5/14/2022 12:11:15'!
 add: aSentence
 
-	(aSentence isKindOf: String) ifFalse: [ self error: self class canOnlyAddStringsErrorDescription ].
+	(aSentence isKindOf: String) ifFalse: [ self error: self class canOnlyRecieveStringsErrorDescription ].
 	
 	sentencesStack push: aSentence.
 	! !
 
-!SentenceFinderByPrefix methodsFor: 'SentenceFinder operations' stamp: 'FRJ 5/14/2022 11:11:35'!
+!SentenceFinderByPrefix methodsFor: 'operations' stamp: 'FRJ 5/14/2022 11:17:18'!
 find: aPrefix
 	
 	| invertedStack validSentences aSentence |
+	
+	self checkPrefix: aPrefix.
 	
 	invertedStack := OOStack new.
 	validSentences := OrderedCollection new.
@@ -441,8 +516,7 @@ find: aPrefix
 	
 	! !
 
-
-!SentenceFinderByPrefix methodsFor: 'as yet unclassified' stamp: 'FRJ 5/14/2022 11:05:48'!
+!SentenceFinderByPrefix methodsFor: 'operations' stamp: 'FRJ 5/14/2022 11:05:48'!
 sentence: aSentence StartsWithPrefix: aPrefix
 
 	| result |
@@ -453,13 +527,32 @@ sentence: aSentence StartsWithPrefix: aPrefix
 
 	^result.! !
 
+
+!SentenceFinderByPrefix methodsFor: 'as yet unclassified' stamp: 'FRJ 5/14/2022 12:11:15'!
+checkPrefix: aPrefix
+
+	(aPrefix isKindOf: String) ifFalse: [ self error: self class canOnlyRecieveStringsErrorDescription ].
+	aPrefix isEmpty ifTrue: [ self error: self class canNotSearchForAnEmptyPrefixErrorDescription ].
+	(aPrefix allSatisfy: [:letter | letter ~= $ ]) ifFalse: [ self error: self class prefixesCanNotContainEmptySpacesErrorDescription ].
+	! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'SentenceFinderByPrefix class' category: 'Stack-Exercise'!
 SentenceFinderByPrefix class
 	instanceVariableNames: ''!
 
-!SentenceFinderByPrefix class methodsFor: 'error descriptions' stamp: 'FRJ 5/14/2022 10:50:00'!
-canOnlyAddStringsErrorDescription
+!SentenceFinderByPrefix class methodsFor: 'error descriptions' stamp: 'FRJ 5/14/2022 12:05:22'!
+canNotSearchForAnEmptyPrefixErrorDescription
 
-	^'Can only add strings'! !
+	^'Can not search for an empty prefix'.! !
+
+!SentenceFinderByPrefix class methodsFor: 'error descriptions' stamp: 'FRJ 5/14/2022 12:11:20'!
+canOnlyRecieveStringsErrorDescription
+
+	^'Can only recieve strings'! !
+
+!SentenceFinderByPrefix class methodsFor: 'error descriptions' stamp: 'FRJ 5/14/2022 12:05:08'!
+prefixesCanNotContainEmptySpacesErrorDescription
+
+	^ 'Prefixes can not contain empty spaces'.! !
