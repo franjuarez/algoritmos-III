@@ -158,10 +158,21 @@ initializeWithElement: anElement andPreviouseNode: aNode
 	self subclassResponsibility.! !
 
 
-!Node methodsFor: 'as yet unclassified' stamp: 'FRJ 5/12/2022 20:48:41'!
+!Node methodsFor: 'accesing' stamp: 'FRJ 5/12/2022 20:48:41'!
 obtainElement
 
 	self subclassResponsibility .! !
+
+!Node methodsFor: 'accesing' stamp: 'pa 5/13/2022 23:44:48'!
+previouseNode
+
+	self subclassResponsibility .! !
+
+
+!Node methodsFor: 'error handling' stamp: 'pa 5/13/2022 23:41:53'!
+ifNullNodeRaiseError: anError
+
+	self subclassResponsibility.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -200,15 +211,21 @@ initializeWithElement: anElement andPreviouseNode: unNodo
 	previouseNode := unNodo.! !
 
 
-!ActiveNode methodsFor: 'as yet unclassified' stamp: 'FRJ 5/12/2022 20:47:27'!
+!ActiveNode methodsFor: 'accessing' stamp: 'FRJ 5/12/2022 20:47:27'!
 obtainElement
 
 	^element! !
 
-!ActiveNode methodsFor: 'as yet unclassified' stamp: 'pa 5/13/2022 23:26:51'!
+!ActiveNode methodsFor: 'accessing' stamp: 'pa 5/13/2022 23:26:51'!
 previouseNode
 
 	^previouseNode ! !
+
+
+!ActiveNode methodsFor: 'error handling' stamp: 'pa 5/13/2022 23:41:27'!
+ifNullNodeRaiseError: anError
+
+	! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -233,12 +250,18 @@ Node subclass: #NullNode
 initializeWithElement: anElement andPreviouseNode: unNodo ! !
 
 
-!NullNode methodsFor: 'as yet unclassified' stamp: 'pa 5/13/2022 23:19:20'!
+!NullNode methodsFor: 'error handling' stamp: 'pa 5/13/2022 23:41:18'!
+ifNullNodeRaiseError: anError
+
+	 self error: anError.! !
+
+
+!NullNode methodsFor: 'accesing' stamp: 'pa 5/13/2022 23:19:20'!
 obtainElement
 
 	^self class error: self class canNotObtainElementFromNullNodeErrorDescription.! !
 
-!NullNode methodsFor: 'as yet unclassified' stamp: 'pa 5/13/2022 23:27:00'!
+!NullNode methodsFor: 'accesing' stamp: 'pa 5/13/2022 23:27:00'!
 previouseNode! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
@@ -260,54 +283,55 @@ canNotObtainElementFromNullNodeErrorDescription
 
 !classDefinition: #OOStack category: 'Stack-Exercise'!
 Object subclass: #OOStack
-	instanceVariableNames: 'lastNode'
+	instanceVariableNames: 'lastNode size'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
 
-!OOStack methodsFor: 'testing' stamp: 'pa 5/13/2022 23:24:09'!
+!OOStack methodsFor: 'testing' stamp: 'pa 5/13/2022 23:32:37'!
 isEmpty
 
-	^lastNode isKindOf: NullNode.! !
+	^size = 0.! !
 
 
-!OOStack methodsFor: 'initialization' stamp: 'pa 5/13/2022 23:24:09'!
+!OOStack methodsFor: 'initialization' stamp: 'pa 5/13/2022 23:30:48'!
 initialize
 
-	lastNode := Node withElement: nil andPreviouseNode: nil.! !
+	lastNode := Node withElement: nil andPreviouseNode: nil.
+	size := 0! !
 
 
-!OOStack methodsFor: 'stack operations' stamp: 'pa 5/13/2022 23:27:10'!
+!OOStack methodsFor: 'stack operations' stamp: 'pa 5/13/2022 23:43:55'!
 pop
 
 	| poppedElement |
 
-	self isEmpty ifTrue: [ self error: self class stackEmptyErrorDescription ].
-
-	poppedElement := lastNode obtainElement.
+	poppedElement := self top.
 	lastNode := lastNode previouseNode.
+	size := size -1. 
 
 	^poppedElement .! !
 
-!OOStack methodsFor: 'stack operations' stamp: 'pa 5/13/2022 23:24:09'!
+!OOStack methodsFor: 'stack operations' stamp: 'pa 5/13/2022 23:31:37'!
 push: anElement
 
-	lastNode := Node withElement: anElement  andPreviouseNode: lastNode .
+	lastNode := Node withElement: anElement  andPreviouseNode: lastNode.
+	size := size + 1.
 ! !
 
-!OOStack methodsFor: 'stack operations' stamp: 'FRJ 5/10/2022 22:27:58'!
+!OOStack methodsFor: 'stack operations' stamp: 'pa 5/13/2022 23:40:36'!
 top
+	
+	lastNode ifNullNodeRaiseError: self class stackEmptyErrorDescription.
 
-	self isEmpty ifTrue: [ self error: self class stackEmptyErrorDescription ].
-
-	^elements last.
+	^lastNode obtainElement .
 ! !
 
 
-!OOStack methodsFor: 'accesing' stamp: 'FRJ 5/10/2022 22:21:52'!
+!OOStack methodsFor: 'accesing' stamp: 'pa 5/13/2022 23:30:39'!
 size
 
-	^elements size.! !
+	^size.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
