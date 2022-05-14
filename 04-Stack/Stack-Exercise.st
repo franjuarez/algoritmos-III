@@ -378,10 +378,10 @@ previouseNode! !
 NullNode class
 	instanceVariableNames: ''!
 
-!NullNode class methodsFor: 'instance creation' stamp: 'pa 5/13/2022 23:17:58'!
+!NullNode class methodsFor: 'instance creation' stamp: 'pa 5/14/2022 17:07:20'!
 canInstance: aNode
 
-	^aNode class superclass ~= Node.! !
+	^(ActiveNode canInstance: aNode)not.! !
 
 
 !NullNode class methodsFor: 'error descriptions' stamp: 'pa 5/13/2022 23:19:53'!
@@ -476,12 +476,26 @@ add: aSentence
 	sentencesStack push: aSentence.
 	! !
 
-!SentenceFinderByPrefix methodsFor: 'operations' stamp: 'FRJ 5/14/2022 13:08:20'!
+!SentenceFinderByPrefix methodsFor: 'operations' stamp: 'pa 5/14/2022 17:22:16'!
+checkPrefix: aPrefix
+
+	(aPrefix isKindOf: String) ifFalse: [ self error: self class canOnlyRecieveStringsErrorDescription ].
+	aPrefix isEmpty ifTrue: [ self error: self class canNotSearchForAnEmptyPrefixErrorDescription ].
+	(aPrefix allSatisfy: [:letter | letter ~= $ ]) ifFalse: [self error: self class prefixesCanNotContainEmptySpacesErrorDescription ].
+	! !
+
+!SentenceFinderByPrefix methodsFor: 'operations' stamp: 'pa 5/14/2022 17:50:45'!
 find: aPrefix
 	
-	| invertedStack validSentences aSentence |
-	
 	self checkPrefix: aPrefix.
+	
+	^self obtainValidSentences: sentencesStack acordingToCondition: [:aSentence | self sentence: aSentence StartsWithPrefix: aPrefix]
+	! !
+
+!SentenceFinderByPrefix methodsFor: 'operations' stamp: 'pa 5/14/2022 17:51:23'!
+obtainValidSentences: sentences acordingToCondition: condition
+	
+	| invertedStack validSentences aSentence|
 	
 	invertedStack := OOStack new.
 	validSentences := OrderedCollection new.
@@ -489,7 +503,7 @@ find: aPrefix
 	[sentencesStack isEmpty] whileFalse: [
 		aSentence := sentencesStack pop.
 		invertedStack push: aSentence.
-		(self sentence: aSentence StartsWithPrefix: aPrefix) ifTrue: [ validSentences add: aSentence ].
+		(condition value: aSentence) ifTrue: [ validSentences add: aSentence ].
 		].
 	
 	[invertedStack isEmpty] whileFalse: [
@@ -512,16 +526,6 @@ sentence: aSentence StartsWithPrefix: aPrefix
 	1 to: (aPrefix size) do: [:index | result := result and: [(aPrefix at: index) = (aSentence at: index)] ].
 
 	^result.! !
-
-
-!SentenceFinderByPrefix methodsFor: 'as yet unclassified' stamp: 'FRJ 5/14/2022 13:01:29'!
-checkPrefix: aPrefix
-
-	(aPrefix isKindOf: String) ifFalse: [ self error: self class canOnlyRecieveStringsErrorDescription ].
-	aPrefix isEmpty ifTrue: [ self error: self class canNotSearchForAnEmptyPrefixErrorDescription ].
-	(aPrefix allSatisfy: [:letter | letter ~= $ ]) ifFalse: [
-		 self error: self class prefixesCanNotContainEmptySpacesErrorDescription ].
-	! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
