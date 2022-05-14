@@ -169,10 +169,19 @@ obtainElement
 Node class
 	instanceVariableNames: ''!
 
-!Node class methodsFor: 'as yet unclassified' stamp: 'FRJ 5/12/2022 20:55:55'!
+!Node class methodsFor: 'as yet unclassified' stamp: 'pa 5/13/2022 23:18:27'!
+canInstance
+
+	self subclassResponsibility.! !
+
+!Node class methodsFor: 'as yet unclassified' stamp: 'pa 5/13/2022 23:21:59'!
 withElement: anElement andPreviouseNode: aNode
 
-	self subclasses detect: [:subclass | subclass canInstance: aNode ].
+	| newNodeClass |
+
+	newNodeClass := self subclasses detect: [:subclass | subclass canInstance: aNode ].
+	^newNodeClass new initializeWithElement: anElement andPreviouseNode: aNode.
+	
 	
 	! !
 
@@ -196,16 +205,21 @@ obtainElement
 
 	^element! !
 
+!ActiveNode methodsFor: 'as yet unclassified' stamp: 'pa 5/13/2022 23:26:51'!
+previouseNode
+
+	^previouseNode ! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'ActiveNode class' category: 'Stack-Exercise'!
 ActiveNode class
 	instanceVariableNames: ''!
 
-!ActiveNode class methodsFor: 'as yet unclassified' stamp: 'FRJ 5/12/2022 20:52:53'!
+!ActiveNode class methodsFor: 'as yet unclassified' stamp: 'pa 5/13/2022 23:18:05'!
 canInstance: aNode
 	
-	^aNode class superclass isKindOf: Node.! !
+	^aNode class superclass = Node.! !
 
 
 !classDefinition: #NullNode category: 'Stack-Exercise'!
@@ -219,10 +233,13 @@ Node subclass: #NullNode
 initializeWithElement: anElement andPreviouseNode: unNodo ! !
 
 
-!NullNode methodsFor: 'as yet unclassified' stamp: 'FRJ 5/12/2022 20:49:06'!
+!NullNode methodsFor: 'as yet unclassified' stamp: 'pa 5/13/2022 23:19:20'!
 obtainElement
 
-	^nil.! !
+	^self class error: self class canNotObtainElementFromNullNodeErrorDescription.! !
+
+!NullNode methodsFor: 'as yet unclassified' stamp: 'pa 5/13/2022 23:27:00'!
+previouseNode! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -230,42 +247,52 @@ obtainElement
 NullNode class
 	instanceVariableNames: ''!
 
-!NullNode class methodsFor: 'as yet unclassified' stamp: 'FRJ 5/12/2022 20:53:50'!
+!NullNode class methodsFor: 'as yet unclassified' stamp: 'pa 5/13/2022 23:17:58'!
 canInstance: aNode
 
-	^aNode class superclass isKindOf: Node.! !
+	^aNode class superclass ~= Node.! !
+
+!NullNode class methodsFor: 'as yet unclassified' stamp: 'pa 5/13/2022 23:19:53'!
+canNotObtainElementFromNullNodeErrorDescription
+
+	^ 'canNotObtainElementFromNullNode'! !
 
 
 !classDefinition: #OOStack category: 'Stack-Exercise'!
 Object subclass: #OOStack
-	instanceVariableNames: 'lastElement'
+	instanceVariableNames: 'lastNode'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
 
-!OOStack methodsFor: 'testing' stamp: 'FRJ 5/12/2022 20:51:42'!
+!OOStack methodsFor: 'testing' stamp: 'pa 5/13/2022 23:24:09'!
 isEmpty
 
-	^lastElement class isKindOf: NullNode.! !
+	^lastNode isKindOf: NullNode.! !
 
 
-!OOStack methodsFor: 'initialization' stamp: 'FRJ 5/12/2022 20:50:58'!
+!OOStack methodsFor: 'initialization' stamp: 'pa 5/13/2022 23:24:09'!
 initialize
 
-	lastElement := Node withElement: nil andPreviouseNode: nil.! !
+	lastNode := Node withElement: nil andPreviouseNode: nil.! !
 
 
-!OOStack methodsFor: 'stack operations' stamp: 'FRJ 5/10/2022 22:25:21'!
+!OOStack methodsFor: 'stack operations' stamp: 'pa 5/13/2022 23:27:10'!
 pop
+
+	| poppedElement |
 
 	self isEmpty ifTrue: [ self error: self class stackEmptyErrorDescription ].
 
-	^elements removeLast.! !
+	poppedElement := lastNode obtainElement.
+	lastNode := lastNode previouseNode.
 
-!OOStack methodsFor: 'stack operations' stamp: 'FRJ 5/10/2022 22:12:20'!
-push: anObject
+	^poppedElement .! !
 
-	elements addLast: anObject.
+!OOStack methodsFor: 'stack operations' stamp: 'pa 5/13/2022 23:24:09'!
+push: anElement
+
+	lastNode := Node withElement: anElement  andPreviouseNode: lastNode .
 ! !
 
 !OOStack methodsFor: 'stack operations' stamp: 'FRJ 5/10/2022 22:27:58'!
