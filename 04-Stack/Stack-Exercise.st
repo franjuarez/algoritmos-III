@@ -139,39 +139,29 @@ test10CanNotTopWhenThereAreNoObjectsInTheStack
 
 !classDefinition: #SentenceFinderByPrefixTest category: 'Stack-Exercise'!
 TestCase subclass: #SentenceFinderByPrefixTest
-	instanceVariableNames: ''
+	instanceVariableNames: 'sentenceFinder foundSentences'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
 
-!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'pa 5/14/2022 00:28:53'!
+!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'FRJ 5/14/2022 12:53:02'!
 test01CantFindSentenceWhenItsEmpty
 
-	| sentenceFinder  foundSentences |
-	
-	sentenceFinder := SentenceFinderByPrefix new.
 	foundSentences := sentenceFinder find: 'Win'.
+	
 	self assert: [ foundSentences size = 0].! !
 
-!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'pa 5/14/2022 00:29:10'!
+!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'FRJ 5/14/2022 12:53:17'!
 test02CanFindSentenceWhenItsTheOnlyOne
 
-	| sentenceFinder foundSentences |
-	
-	sentenceFinder := SentenceFinderByPrefix new.
-	
 	sentenceFinder add: 'Winter is here'.
 	foundSentences := sentenceFinder find: 'Win'.
 	
 	self assert: [foundSentences first = 'Winter is here'].! !
 
-!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'FRJ 5/14/2022 10:30:52'!
+!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'FRJ 5/14/2022 12:53:30'!
 test03CanFindMultipleSentencesWhenThereIsMultipleValidSentences
 
-	| sentenceFinder foundSentences |
-	
-	sentenceFinder := SentenceFinderByPrefix new.
-	
 	sentenceFinder add: 'Winter is here'	.
 	sentenceFinder add: 'Winter is comming'	.
 	sentenceFinder add: 'Everything is winning'.
@@ -182,13 +172,9 @@ test03CanFindMultipleSentencesWhenThereIsMultipleValidSentences
 	self assert: [(foundSentences includes: 'Winter is here') and: [foundSentences includes: 'Winter is comming']].
 ! !
 
-!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'FRJ 5/14/2022 12:11:15'!
+!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'FRJ 5/14/2022 12:53:41'!
 test04CanOnlyAddStrings
-	
-	| sentenceFinder |
-	
-	sentenceFinder := SentenceFinderByPrefix new.
-	
+
 	self 
 	should: [ sentenceFinder add: 4 ]
 	raise: Error
@@ -196,13 +182,9 @@ test04CanOnlyAddStrings
 		self assert: anError messageText = SentenceFinderByPrefix canOnlyRecieveStringsErrorDescription ]
 		! !
 
-!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'FRJ 5/14/2022 12:05:08'!
+!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'FRJ 5/14/2022 12:53:48'!
 test05PrefixesCanNotContainEmptySpaces
-	
-	| sentenceFinder |
-	
-	sentenceFinder := SentenceFinderByPrefix new.
-	
+
 	self 
 	should: [ sentenceFinder find: ' ' ]
 	raise: Error
@@ -210,12 +192,8 @@ test05PrefixesCanNotContainEmptySpaces
 		self assert: anError messageText = SentenceFinderByPrefix prefixesCanNotContainEmptySpacesErrorDescription ]
 		! !
 
-!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'FRJ 5/14/2022 12:05:22'!
+!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'FRJ 5/14/2022 12:53:54'!
 test06PrefixesCanNotbeEmpty
-	
-	| sentenceFinder |
-	
-	sentenceFinder := SentenceFinderByPrefix new.
 	
 	self 
 	should: [ sentenceFinder find: '' ]
@@ -224,12 +202,8 @@ test06PrefixesCanNotbeEmpty
 		self assert: anError messageText = SentenceFinderByPrefix canNotSearchForAnEmptyPrefixErrorDescription ]
 		! !
 
-!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'FRJ 5/14/2022 11:46:18'!
+!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'FRJ 5/14/2022 12:54:15'!
 test07PrefixesAreKeySensitive
-	
-	| sentenceFinder  foundSentences |
-	
-	sentenceFinder := SentenceFinderByPrefix new.
 	
 	sentenceFinder add: 'Winter is here'	.
 	sentenceFinder add: 'mauasa katai'.
@@ -239,12 +213,8 @@ test07PrefixesAreKeySensitive
 	
 	self assert: [ foundSentences size = 1 and: [foundSentences first = 'Winter is here' ]]! !
 
-!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'FRJ 5/14/2022 12:11:15'!
+!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'FRJ 5/14/2022 12:54:21'!
 test08PrefixesCanOnlyBeStrings
-	
-	| sentenceFinder |
-	
-	sentenceFinder := SentenceFinderByPrefix new.
 	
 	self 
 	should: [ sentenceFinder find: 4 ]
@@ -253,13 +223,9 @@ test08PrefixesCanOnlyBeStrings
 		self assert: anError messageText = SentenceFinderByPrefix canOnlyRecieveStringsErrorDescription ]
 		! !
 
-!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'FRJ 5/14/2022 12:18:01'!
+!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'FRJ 5/14/2022 12:54:38'!
 test09SentencesWithoutPrefixCanNotBeFound
 
-	| sentenceFinder foundSentences |
-	
-	sentenceFinder := SentenceFinderByPrefix new.
-	
 	sentenceFinder add: ''	.
 	sentenceFinder add: ' '	.
 	sentenceFinder add: ' Winter'.
@@ -268,6 +234,23 @@ test09SentencesWithoutPrefixCanNotBeFound
 
 	self assert: [ foundSentences isEmpty ].
 ! !
+
+!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'FRJ 5/14/2022 12:54:56'!
+test10CanNotFindSentencesWhenPrefixIsLonger
+
+	sentenceFinder add: 'Wind'	.
+	sentenceFinder add: 'Win'	.
+	
+	foundSentences := sentenceFinder find: 'Winter'.
+
+	self assert: [ foundSentences isEmpty ].
+! !
+
+
+!SentenceFinderByPrefixTest methodsFor: 'setup' stamp: 'FRJ 5/14/2022 12:52:43'!
+setUp
+	
+	sentenceFinder := SentenceFinderByPrefix new.! !
 
 
 !classDefinition: #Node category: 'Stack-Exercise'!
@@ -305,12 +288,12 @@ ifNullNodeRaiseError: anError
 Node class
 	instanceVariableNames: ''!
 
-!Node class methodsFor: 'as yet unclassified' stamp: 'pa 5/13/2022 23:18:27'!
+!Node class methodsFor: 'instance creation' stamp: 'pa 5/13/2022 23:18:27'!
 canInstance
 
 	self subclassResponsibility.! !
 
-!Node class methodsFor: 'as yet unclassified' stamp: 'pa 5/13/2022 23:21:59'!
+!Node class methodsFor: 'instance creation' stamp: 'pa 5/13/2022 23:21:59'!
 withElement: anElement andPreviouseNode: aNode
 
 	| newNodeClass |
@@ -358,7 +341,7 @@ ifNullNodeRaiseError: anError
 ActiveNode class
 	instanceVariableNames: ''!
 
-!ActiveNode class methodsFor: 'as yet unclassified' stamp: 'pa 5/13/2022 23:18:05'!
+!ActiveNode class methodsFor: 'instance creation' stamp: 'pa 5/13/2022 23:18:05'!
 canInstance: aNode
 	
 	^aNode class superclass = Node.! !
@@ -395,12 +378,13 @@ previouseNode! !
 NullNode class
 	instanceVariableNames: ''!
 
-!NullNode class methodsFor: 'as yet unclassified' stamp: 'pa 5/13/2022 23:17:58'!
+!NullNode class methodsFor: 'instance creation' stamp: 'pa 5/13/2022 23:17:58'!
 canInstance: aNode
 
 	^aNode class superclass ~= Node.! !
 
-!NullNode class methodsFor: 'as yet unclassified' stamp: 'pa 5/13/2022 23:19:53'!
+
+!NullNode class methodsFor: 'error descriptions' stamp: 'pa 5/13/2022 23:19:53'!
 canNotObtainElementFromNullNodeErrorDescription
 
 	^ 'canNotObtainElementFromNullNode'! !
@@ -492,7 +476,7 @@ add: aSentence
 	sentencesStack push: aSentence.
 	! !
 
-!SentenceFinderByPrefix methodsFor: 'operations' stamp: 'FRJ 5/14/2022 11:17:18'!
+!SentenceFinderByPrefix methodsFor: 'operations' stamp: 'FRJ 5/14/2022 13:08:20'!
 find: aPrefix
 	
 	| invertedStack validSentences aSentence |
@@ -516,24 +500,27 @@ find: aPrefix
 	
 	! !
 
-!SentenceFinderByPrefix methodsFor: 'operations' stamp: 'FRJ 5/14/2022 11:05:48'!
+!SentenceFinderByPrefix methodsFor: 'operations' stamp: 'FRJ 5/14/2022 12:36:58'!
 sentence: aSentence StartsWithPrefix: aPrefix
 
 	| result |
 
 	result := true.
 	
+	aPrefix size > aSentence size ifTrue: [ ^false ].
+	
 	1 to: (aPrefix size) do: [:index | result := result and: [(aPrefix at: index) = (aSentence at: index)] ].
 
 	^result.! !
 
 
-!SentenceFinderByPrefix methodsFor: 'as yet unclassified' stamp: 'FRJ 5/14/2022 12:11:15'!
+!SentenceFinderByPrefix methodsFor: 'as yet unclassified' stamp: 'FRJ 5/14/2022 13:01:29'!
 checkPrefix: aPrefix
 
 	(aPrefix isKindOf: String) ifFalse: [ self error: self class canOnlyRecieveStringsErrorDescription ].
 	aPrefix isEmpty ifTrue: [ self error: self class canNotSearchForAnEmptyPrefixErrorDescription ].
-	(aPrefix allSatisfy: [:letter | letter ~= $ ]) ifFalse: [ self error: self class prefixesCanNotContainEmptySpacesErrorDescription ].
+	(aPrefix allSatisfy: [:letter | letter ~= $ ]) ifFalse: [
+		 self error: self class prefixesCanNotContainEmptySpacesErrorDescription ].
 	! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
