@@ -144,6 +144,44 @@ TestCase subclass: #SentenceFinderByPrefixTest
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
 
+!SentenceFinderByPrefixTest methodsFor: 'as yet unclassified' stamp: 'pa 5/14/2022 00:28:53'!
+test01CantFindSentenceWhenItsEmpty
+
+	| sentenceFinder  foundSentences |
+	
+	sentenceFinder := SentenceFinderByPrefix new.
+	foundSentences := sentenceFinder find: 'Win'.
+	self assert: [ foundSentences size = 0].! !
+
+!SentenceFinderByPrefixTest methodsFor: 'as yet unclassified' stamp: 'pa 5/14/2022 00:29:10'!
+test02CanFindSentenceWhenItsTheOnlyOne
+
+	| sentenceFinder foundSentences |
+	
+	sentenceFinder := SentenceFinderByPrefix new.
+	
+	sentenceFinder add: 'Winter is here'.
+	foundSentences := sentenceFinder find: 'Win'.
+	
+	self assert: [foundSentences first = 'Winter is here'].! !
+
+!SentenceFinderByPrefixTest methodsFor: 'as yet unclassified' stamp: 'pa 5/14/2022 00:29:35'!
+test03CanFindMultipleSentencesWhenThereIsMultipleValidSentences
+
+	| sentenceFinder foundSentences |
+	
+	sentenceFinder := SentenceFinderByPrefix new.
+	
+	sentenceFinder add: 'Winter is here'	.
+	sentenceFinder add: 'Winter is comming'	.
+	sentenceFinder add: 'Everything is winning'.
+	sentenceFinder add: 'The winds of Winter'	.
+	
+	foundSentences := sentenceFinder find: 'Win'.
+
+	self assert: [(foundSentences includes: 'Winter is here') and: ['Winter is comming']].
+! !
+
 
 !classDefinition: #Node category: 'Stack-Exercise'!
 Object subclass: #Node
@@ -347,7 +385,30 @@ stackEmptyErrorDescription
 
 !classDefinition: #SentenceFinderByPrefix category: 'Stack-Exercise'!
 Object subclass: #SentenceFinderByPrefix
-	instanceVariableNames: ''
+	instanceVariableNames: 'sentencesStack'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
+
+!SentenceFinderByPrefix methodsFor: 'as yet unclassified' stamp: 'pa 5/14/2022 00:50:14'!
+find: aPrefix
+	
+	| invertedStack validSentences sentence|
+	
+	invertedStack := OOStack new.
+	validSentences := #().
+	
+	sentencesStack isEmpty whileFalse: [
+		"mensaje que con un for chequea que los prefijos sean iguales"
+		sentence := sentencesStack pop.
+		invertedStack push: sentence .
+		
+		sentence ifTrue: []
+				
+		]! !
+
+!SentenceFinderByPrefix methodsFor: 'as yet unclassified' stamp: 'pa 5/14/2022 00:28:03'!
+initialize
+
+	sentencesStack := OOStack new.
+	! !
