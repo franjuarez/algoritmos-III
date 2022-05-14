@@ -165,7 +165,7 @@ test02CanFindSentenceWhenItsTheOnlyOne
 	
 	self assert: [foundSentences first = 'Winter is here'].! !
 
-!SentenceFinderByPrefixTest methodsFor: 'as yet unclassified' stamp: 'pa 5/14/2022 00:29:35'!
+!SentenceFinderByPrefixTest methodsFor: 'as yet unclassified' stamp: 'FRJ 5/14/2022 10:30:52'!
 test03CanFindMultipleSentencesWhenThereIsMultipleValidSentences
 
 	| sentenceFinder foundSentences |
@@ -179,7 +179,7 @@ test03CanFindMultipleSentencesWhenThereIsMultipleValidSentences
 	
 	foundSentences := sentenceFinder find: 'Win'.
 
-	self assert: [(foundSentences includes: 'Winter is here') and: ['Winter is comming']].
+	self assert: [(foundSentences includes: 'Winter is here') and: [foundSentences includes: 'Winter is comming']].
 ! !
 
 
@@ -390,22 +390,37 @@ Object subclass: #SentenceFinderByPrefix
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
 
-!SentenceFinderByPrefix methodsFor: 'as yet unclassified' stamp: 'pa 5/14/2022 00:50:14'!
+!SentenceFinderByPrefix methodsFor: 'as yet unclassified' stamp: 'FRJ 5/14/2022 10:24:00'!
+add: aSentence
+
+	(aSentence isKindOf: String) ifFalse: [ self error: 'Can only add strings' ].
+	
+	sentencesStack push: aSentence.
+	! !
+
+!SentenceFinderByPrefix methodsFor: 'as yet unclassified' stamp: 'FRJ 5/14/2022 10:37:14'!
 find: aPrefix
 	
-	| invertedStack validSentences sentence|
+	| invertedStack validSentences sentence result |
 	
 	invertedStack := OOStack new.
-	validSentences := #().
+	validSentences := OrderedCollection new.
 	
-	sentencesStack isEmpty whileFalse: [
-		"mensaje que con un for chequea que los prefijos sean iguales"
+	[sentencesStack isEmpty] whileFalse: [
+		result := true.
 		sentence := sentencesStack pop.
-		invertedStack push: sentence .
-		
-		sentence ifTrue: []
-				
-		]! !
+		invertedStack push: sentence.
+		1 to: (aPrefix size) do: [:index | result := result and: [(aPrefix at: index) = (sentence at: index)] ].
+		result ifTrue: [ validSentences add: sentence ].
+		].
+	
+	[invertedStack isEmpty] whileFalse: [
+		sentencesStack push: invertedStack pop.
+	].
+	
+	^validSentences.
+	
+	! !
 
 !SentenceFinderByPrefix methodsFor: 'as yet unclassified' stamp: 'pa 5/14/2022 00:28:03'!
 initialize
