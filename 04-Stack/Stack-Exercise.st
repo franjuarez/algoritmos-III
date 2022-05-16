@@ -5,16 +5,17 @@ TestCase subclass: #OOStackTest
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
 
-!OOStackTest methodsFor: 'test' stamp: 'HernanWilkinson 5/7/2012 11:30'!
-test01StackShouldBeEmptyWhenCreated
+!OOStackTest methodsFor: 'LimitedStack tests' stamp: 'FRJ 5/16/2022 12:36:42'!
+test01LimitedStackIsEmptyAndMaximumSizeIsCorrectWhenCreated
 
-	| stack |
+	| limitedStack |
 	
-	stack := OOStack new.
+	limitedStack := OOStack withLimit: 5.
 	
-	self assert: stack isEmpty! !
+	self assert: (limitedStack isEmpty and: [limitedStack limit = 5]).! !
 
-!OOStackTest methodsFor: 'test' stamp: 'NR 5/13/2020 13:29:55'!
+
+!OOStackTest methodsFor: 'general Stack tests' stamp: 'NR 5/13/2020 13:29:55'!
 test02PushAddElementsToTheStack
 
 	| stack |
@@ -24,7 +25,7 @@ test02PushAddElementsToTheStack
 	
 	self deny: stack isEmpty! !
 
-!OOStackTest methodsFor: 'test' stamp: 'NR 5/13/2020 13:30:01'!
+!OOStackTest methodsFor: 'general Stack tests' stamp: 'NR 5/13/2020 13:30:01'!
 test03PopRemovesElementsFromTheStack
 
 	| stack |
@@ -35,7 +36,7 @@ test03PopRemovesElementsFromTheStack
 	
 	self assert: stack isEmpty! !
 
-!OOStackTest methodsFor: 'test' stamp: 'NR 5/13/2020 13:30:09'!
+!OOStackTest methodsFor: 'general Stack tests' stamp: 'NR 5/13/2020 13:30:09'!
 test04PopReturnsLastPushedObject
 
 	| stack pushedObject |
@@ -46,7 +47,7 @@ test04PopReturnsLastPushedObject
 	
 	self assert: stack pop = pushedObject! !
 
-!OOStackTest methodsFor: 'test' stamp: 'NR 5/13/2020 13:30:48'!
+!OOStackTest methodsFor: 'general Stack tests' stamp: 'NR 5/13/2020 13:30:48'!
 test05StackBehavesLIFO
 
 	| stack firstPushedObject secondPushedObject |
@@ -63,7 +64,7 @@ test05StackBehavesLIFO
 	self assert: stack isEmpty 
 	! !
 
-!OOStackTest methodsFor: 'test' stamp: 'NR 5/13/2020 13:30:20'!
+!OOStackTest methodsFor: 'general Stack tests' stamp: 'NR 5/13/2020 13:30:20'!
 test06TopReturnsLastPushedObject
 
 	| stack pushedObject |
@@ -76,7 +77,7 @@ test06TopReturnsLastPushedObject
 	self assert: stack top = pushedObject.
 	! !
 
-!OOStackTest methodsFor: 'test' stamp: 'NR 5/13/2020 13:30:24'!
+!OOStackTest methodsFor: 'general Stack tests' stamp: 'NR 5/13/2020 13:30:24'!
 test07TopDoesNotRemoveObjectFromStack
 
 	| stack pushedObject |
@@ -91,7 +92,7 @@ test07TopDoesNotRemoveObjectFromStack
 	self assert: stack size = 1.
 	! !
 
-!OOStackTest methodsFor: 'test' stamp: 'HAW 4/14/2017 22:48:26'!
+!OOStackTest methodsFor: 'general Stack tests' stamp: 'HAW 4/14/2017 22:48:26'!
 test08CanNotPopWhenThereAreNoObjectsInTheStack
 
 	| stack  |
@@ -105,7 +106,7 @@ test08CanNotPopWhenThereAreNoObjectsInTheStack
 		
 ! !
 
-!OOStackTest methodsFor: 'test' stamp: 'NR 5/13/2020 13:30:31'!
+!OOStackTest methodsFor: 'general Stack tests' stamp: 'NR 5/13/2020 13:30:31'!
 test09CanNotPopWhenThereAreNoObjectsInTheStackAndTheStackHadObjects
 
 	| stack  |
@@ -122,7 +123,7 @@ test09CanNotPopWhenThereAreNoObjectsInTheStackAndTheStackHadObjects
 		
 ! !
 
-!OOStackTest methodsFor: 'test' stamp: 'HAW 4/14/2017 22:48:44'!
+!OOStackTest methodsFor: 'general Stack tests' stamp: 'HAW 4/14/2017 22:48:44'!
 test10CanNotTopWhenThereAreNoObjectsInTheStack
 
 	| stack  |
@@ -135,6 +136,16 @@ test10CanNotTopWhenThereAreNoObjectsInTheStack
 			self assert: anError messageText = OOStack stackEmptyErrorDescription ]
 		
 ! !
+
+
+!OOStackTest methodsFor: 'UnlimiteStack tests' stamp: 'FRJ 5/16/2022 12:36:30'!
+test01StackShouldBeEmptyWhenCreated
+
+	| unlimitedStack |
+	
+	unlimitedStack := OOStack newUnlimited.
+	
+	self assert: unlimitedStack isEmpty! !
 
 
 !classDefinition: #SentenceFinderByPrefixTest category: 'Stack-Exercise'!
@@ -151,13 +162,13 @@ test01CantFindSentenceWhenItsEmpty
 	
 	self assert: [ foundSentences size = 0].! !
 
-!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'FRJ 5/14/2022 12:53:17'!
+!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'FRJ 5/16/2022 11:13:25'!
 test02CanFindSentenceWhenItsTheOnlyOne
 
 	sentenceFinder add: 'Winter is here'.
 	foundSentences := sentenceFinder find: 'Win'.
 	
-	self assert: [foundSentences first = 'Winter is here'].! !
+	self assert: [foundSentences includes: 'Winter is here'].! !
 
 !SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'FRJ 5/14/2022 12:53:30'!
 test03CanFindMultipleSentencesWhenThereIsMultipleValidSentences
@@ -202,7 +213,7 @@ test06PrefixesCanNotbeEmpty
 		self assert: anError messageText = SentenceFinderByPrefix canNotSearchForAnEmptyPrefixErrorDescription ]
 		! !
 
-!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'FRJ 5/14/2022 12:54:15'!
+!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'FRJ 5/16/2022 11:13:04'!
 test07PrefixesAreKeySensitive
 	
 	sentenceFinder add: 'Winter is here'	.
@@ -211,7 +222,7 @@ test07PrefixesAreKeySensitive
 	
 	foundSentences := sentenceFinder find: 'Win'.
 	
-	self assert: [ foundSentences size = 1 and: [foundSentences first = 'Winter is here' ]]! !
+	self assert: [ foundSentences size = 1 and: [foundSentences includes: 'Winter is here' ]]! !
 
 !SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'FRJ 5/14/2022 12:54:21'!
 test08PrefixesCanOnlyBeStrings
@@ -244,6 +255,16 @@ test10CanNotFindSentencesWhenPrefixIsLonger
 	foundSentences := sentenceFinder find: 'Winter'.
 
 	self assert: [ foundSentences isEmpty ].
+! !
+
+!SentenceFinderByPrefixTest methodsFor: 'test' stamp: 'FRJ 5/16/2022 11:12:35'!
+test11CanFindSentencesThatAreTheSameAsPrefix
+
+	sentenceFinder add: 'Win'	.
+	
+	foundSentences := sentenceFinder find: 'Win'.
+
+	self assert: [ foundSentences includes: 'Win' ].
 ! !
 
 
@@ -453,6 +474,66 @@ stackEmptyErrorDescription
 	
 	^ 'Stack is empty'! !
 
+
+!OOStack class methodsFor: 'instance creation' stamp: 'FRJ 5/16/2022 12:33:53'!
+newUnlimited
+
+	^UnlimitedStack create.! !
+
+!OOStack class methodsFor: 'instance creation' stamp: 'FRJ 5/16/2022 12:33:50'!
+withLimit: maximumCapacity
+
+	^LimitedStack withLimit: maximumCapacity.! !
+
+
+!classDefinition: #LimitedStack category: 'Stack-Exercise'!
+OOStack subclass: #LimitedStack
+	instanceVariableNames: 'maximumSize'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Stack-Exercise'!
+
+!LimitedStack methodsFor: 'initialization' stamp: 'FRJ 5/16/2022 12:30:10'!
+initializeWith: maximumCapacity
+
+	maximumSize := maximumCapacity.! !
+
+
+!LimitedStack methodsFor: 'accesing' stamp: 'FRJ 5/16/2022 12:31:46'!
+limit
+
+	^maximumSize ! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'LimitedStack class' category: 'Stack-Exercise'!
+LimitedStack class
+	instanceVariableNames: ''!
+
+!LimitedStack class methodsFor: 'instance creation' stamp: 'FRJ 5/16/2022 12:33:39'!
+withLimit: maximumCapacity
+
+	^self new initializeWith: maximumCapacity.! !
+
+
+!classDefinition: #UnlimitedStack category: 'Stack-Exercise'!
+OOStack subclass: #UnlimitedStack
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Stack-Exercise'!
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'UnlimitedStack class' category: 'Stack-Exercise'!
+UnlimitedStack class
+	instanceVariableNames: ''!
+
+!UnlimitedStack class methodsFor: 'as yet unclassified' stamp: 'FRJ 5/16/2022 12:34:03'!
+create
+
+	^self new! !
+
 
 !classDefinition: #SentenceFinderByPrefix category: 'Stack-Exercise'!
 Object subclass: #SentenceFinderByPrefix
@@ -512,14 +593,14 @@ obtainValidSentences: sentences acordingToCondition: aCondition
 	
 	! !
 
-!SentenceFinderByPrefix methodsFor: 'operations' stamp: 'FRJ 5/14/2022 12:36:58'!
+!SentenceFinderByPrefix methodsFor: 'operations' stamp: 'FRJ 5/16/2022 11:09:02'!
 sentence: aSentence StartsWithPrefix: aPrefix
 
 	| result |
 
-	result := true.
-	
 	aPrefix size > aSentence size ifTrue: [ ^false ].
+
+	result := true.
 	
 	1 to: (aPrefix size) do: [:index | result := result and: [(aPrefix at: index) = (aSentence at: index)] ].
 
