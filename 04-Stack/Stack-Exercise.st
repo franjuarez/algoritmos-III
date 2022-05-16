@@ -5,21 +5,21 @@ TestCase subclass: #OOStackTest
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
 
-!OOStackTest methodsFor: 'LimitedStack tests' stamp: 'FRJ 5/16/2022 12:36:42'!
+!OOStackTest methodsFor: 'LimitedStack tests' stamp: 'FRJ 5/16/2022 17:23:56'!
 test01LimitedStackIsEmptyAndMaximumSizeIsCorrectWhenCreated
 
 	| limitedStack |
 	
-	limitedStack := OOStack withLimit: 5.
+	limitedStack := LimitedStack withLimit: 5.
 	
 	self assert: (limitedStack isEmpty and: [limitedStack limit = 5]).! !
 
-!OOStackTest methodsFor: 'LimitedStack tests' stamp: 'pa 5/16/2022 16:03:07'!
+!OOStackTest methodsFor: 'LimitedStack tests' stamp: 'FRJ 5/16/2022 17:24:01'!
 test02CanNotPushIfStackIsFull
 
 	| limitedStack |
 	
-	limitedStack := OOStack withLimit: 1.
+	limitedStack := LimitedStack withLimit: 1.
 	limitedStack push:1.
 	
 	self
@@ -28,21 +28,21 @@ test02CanNotPushIfStackIsFull
 		withExceptionDo: [ :anError |
 			self assert: anError messageText = LimitedStack stackIsFullErrorDescription ]! !
 
-!OOStackTest methodsFor: 'LimitedStack tests' stamp: 'pa 5/16/2022 16:11:58'!
+!OOStackTest methodsFor: 'LimitedStack tests' stamp: 'FRJ 5/16/2022 17:24:07'!
 test03LimitCanNotBeNegative
 	
 	self
-		should: [ OOStack withLimit: -1.]
+		should: [  LimitedStack withLimit: -1.]
 		raise: Error - MessageNotUnderstood 
 		withExceptionDo: [ :anError |
 			self assert: anError messageText = LimitedStack maximumSizeCanNotBeLessThanZeroErrorDescription ].! !
 
-!OOStackTest methodsFor: 'LimitedStack tests' stamp: 'pa 5/16/2022 16:12:16'!
+!OOStackTest methodsFor: 'LimitedStack tests' stamp: 'FRJ 5/16/2022 17:24:12'!
 test04CanNeverPushIfLimitIsZero
 
 	| limitedStack |
 	
-	limitedStack := OOStack withLimit: 0.
+	limitedStack := LimitedStack withLimit: 0.
 	
 	self
 		should: [ limitedStack push: 1]
@@ -51,53 +51,53 @@ test04CanNeverPushIfLimitIsZero
 			self assert: anError messageText = LimitedStack stackIsFullErrorDescription ]! !
 
 
-!OOStackTest methodsFor: 'general Stack tests' stamp: 'FRJ 5/16/2022 12:36:30'!
+!OOStackTest methodsFor: 'general Stack tests' stamp: 'FRJ 5/16/2022 17:22:15'!
 test01StackShouldBeEmptyWhenCreated
 
 	| unlimitedStack |
 	
-	unlimitedStack := OOStack newUnlimited.
+	unlimitedStack := UnlimitedStack new.
 	
 	self assert: unlimitedStack isEmpty! !
 
-!OOStackTest methodsFor: 'general Stack tests' stamp: 'pa 5/16/2022 15:27:13'!
+!OOStackTest methodsFor: 'general Stack tests' stamp: 'FRJ 5/16/2022 17:22:25'!
 test02PushAddElementsToTheStack
 
 	| stack |
 	
-	stack := OOStack newUnlimited .
+	stack := UnlimitedStack new.
 	stack push: 'something'.
 	
 	self deny: stack isEmpty! !
 
-!OOStackTest methodsFor: 'general Stack tests' stamp: 'pa 5/16/2022 15:29:19'!
+!OOStackTest methodsFor: 'general Stack tests' stamp: 'FRJ 5/16/2022 17:22:35'!
 test03PopRemovesElementsFromTheStack
 
 	| stack |
 	
-	stack := OOStack newUnlimited.
+	stack := UnlimitedStack new.
 	stack push: 'something'.
 	stack pop.
 	
 	self assert: stack isEmpty! !
 
-!OOStackTest methodsFor: 'general Stack tests' stamp: 'pa 5/16/2022 15:27:23'!
+!OOStackTest methodsFor: 'general Stack tests' stamp: 'FRJ 5/16/2022 17:22:44'!
 test04PopReturnsLastPushedObject
 
 	| stack pushedObject |
 	
-	stack := OOStack newUnlimited .
+	stack := UnlimitedStack new.
 	pushedObject := 'something'.
 	stack push: pushedObject.
 	
 	self assert: stack pop = pushedObject! !
 
-!OOStackTest methodsFor: 'general Stack tests' stamp: 'pa 5/16/2022 15:27:38'!
+!OOStackTest methodsFor: 'general Stack tests' stamp: 'FRJ 5/16/2022 17:23:03'!
 test05StackBehavesLIFO
 
 	| stack firstPushedObject secondPushedObject |
 	
-	stack := OOStack newUnlimited.
+	stack := UnlimitedStack new.
 	firstPushedObject := 'first'.
 	secondPushedObject := 'second'.
 	
@@ -109,12 +109,12 @@ test05StackBehavesLIFO
 	self assert: stack isEmpty 
 	! !
 
-!OOStackTest methodsFor: 'general Stack tests' stamp: 'pa 5/16/2022 15:27:45'!
+!OOStackTest methodsFor: 'general Stack tests' stamp: 'FRJ 5/16/2022 17:23:17'!
 test06TopReturnsLastPushedObject
 
 	| stack pushedObject |
 	
-	stack := OOStack newUnlimited .
+	stack := UnlimitedStack new .
 	pushedObject := 'something'.
 	
 	stack push: pushedObject.
@@ -122,12 +122,12 @@ test06TopReturnsLastPushedObject
 	self assert: stack top = pushedObject.
 	! !
 
-!OOStackTest methodsFor: 'general Stack tests' stamp: 'pa 5/16/2022 15:27:51'!
+!OOStackTest methodsFor: 'general Stack tests' stamp: 'FRJ 5/16/2022 17:23:21'!
 test07TopDoesNotRemoveObjectFromStack
 
 	| stack pushedObject |
 	
-	stack := OOStack newUnlimited.
+	stack := UnlimitedStack new.
 	pushedObject := 'something'.
 	
 	stack push: pushedObject.
@@ -137,12 +137,12 @@ test07TopDoesNotRemoveObjectFromStack
 	self assert: stack size = 1.
 	! !
 
-!OOStackTest methodsFor: 'general Stack tests' stamp: 'pa 5/16/2022 15:27:59'!
+!OOStackTest methodsFor: 'general Stack tests' stamp: 'FRJ 5/16/2022 17:23:28'!
 test08CanNotPopWhenThereAreNoObjectsInTheStack
 
 	| stack  |
 	
-	stack := OOStack newUnlimited .
+	stack := UnlimitedStack new.
 	self
 		should: [ stack pop ]
 		raise: Error - MessageNotUnderstood 
@@ -151,12 +151,12 @@ test08CanNotPopWhenThereAreNoObjectsInTheStack
 		
 ! !
 
-!OOStackTest methodsFor: 'general Stack tests' stamp: 'pa 5/16/2022 15:28:09'!
+!OOStackTest methodsFor: 'general Stack tests' stamp: 'FRJ 5/16/2022 17:23:33'!
 test09CanNotPopWhenThereAreNoObjectsInTheStackAndTheStackHadObjects
 
 	| stack  |
 	
-	stack := OOStack newUnlimited .
+	stack := UnlimitedStack new .
 	stack push: 'something'.
 	stack pop.
 	
@@ -168,12 +168,12 @@ test09CanNotPopWhenThereAreNoObjectsInTheStackAndTheStackHadObjects
 		
 ! !
 
-!OOStackTest methodsFor: 'general Stack tests' stamp: 'pa 5/16/2022 15:28:19'!
+!OOStackTest methodsFor: 'general Stack tests' stamp: 'FRJ 5/16/2022 17:23:39'!
 test10CanNotTopWhenThereAreNoObjectsInTheStack
 
 	| stack  |
 	
-	stack := OOStack newUnlimited.
+	stack := UnlimitedStack new.
 	self
 		should: [ stack top ]
 		raise: Error - MessageNotUnderstood 
@@ -520,16 +520,6 @@ stackEmptyErrorDescription
 	^ 'Stack is empty'! !
 
 
-!OOStack class methodsFor: 'instance creation' stamp: 'FRJ 5/16/2022 12:33:53'!
-newUnlimited
-
-	^UnlimitedStack create.! !
-
-!OOStack class methodsFor: 'instance creation' stamp: 'FRJ 5/16/2022 12:33:50'!
-withLimit: maximumCapacity
-
-	^LimitedStack withLimit: maximumCapacity.! !
-
 
 !classDefinition: #LimitedStack category: 'Stack-Exercise'!
 OOStack subclass: #LimitedStack
@@ -590,17 +580,6 @@ OOStack subclass: #UnlimitedStack
 canPush
 
 	^true! !
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-!classDefinition: 'UnlimitedStack class' category: 'Stack-Exercise'!
-UnlimitedStack class
-	instanceVariableNames: ''!
-
-!UnlimitedStack class methodsFor: 'instance creation' stamp: 'FRJ 5/16/2022 12:34:03'!
-create
-
-	^self new! !
 
 
 !classDefinition: #SentenceFinderByPrefix category: 'Stack-Exercise'!
