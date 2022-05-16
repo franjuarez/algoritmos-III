@@ -468,20 +468,27 @@ initialize
 	! !
 
 
-!SentenceFinderByPrefix methodsFor: 'operations' stamp: 'FRJ 5/14/2022 12:11:15'!
-add: aSentence
-
-	(aSentence isKindOf: String) ifFalse: [ self error: self class canOnlyRecieveStringsErrorDescription ].
-	
-	sentencesStack push: aSentence.
-	! !
-
-!SentenceFinderByPrefix methodsFor: 'operations' stamp: 'pa 5/14/2022 17:22:16'!
+!SentenceFinderByPrefix methodsFor: 'checking' stamp: 'FRJ 5/16/2022 11:05:16'!
 checkPrefix: aPrefix
 
-	(aPrefix isKindOf: String) ifFalse: [ self error: self class canOnlyRecieveStringsErrorDescription ].
-	aPrefix isEmpty ifTrue: [ self error: self class canNotSearchForAnEmptyPrefixErrorDescription ].
-	(aPrefix allSatisfy: [:letter | letter ~= $ ]) ifFalse: [self error: self class prefixesCanNotContainEmptySpacesErrorDescription ].
+	self ifCondition: (aPrefix isKindOf: String) not raiseError: self class canOnlyRecieveStringsErrorDescription.
+	self ifCondition: aPrefix isEmpty raiseError: self class canNotSearchForAnEmptyPrefixErrorDescription.
+	self ifCondition: (aPrefix allSatisfy: [:letter | letter ~= $ ]) not raiseError: self class prefixesCanNotContainEmptySpacesErrorDescription.
+	! !
+
+!SentenceFinderByPrefix methodsFor: 'checking' stamp: 'FRJ 5/16/2022 10:59:31'!
+ifCondition: aCondition raiseError: anError
+
+	aCondition ifTrue: [ self error: anError ].
+	! !
+
+
+!SentenceFinderByPrefix methodsFor: 'operations' stamp: 'FRJ 5/16/2022 11:05:50'!
+add: aSentence
+
+	self ifCondition: (aSentence isKindOf: String) not raiseError: self class canOnlyRecieveStringsErrorDescription.
+	
+	sentencesStack push: aSentence.
 	! !
 
 !SentenceFinderByPrefix methodsFor: 'operations' stamp: 'pa 5/14/2022 17:50:45'!
@@ -492,23 +499,14 @@ find: aPrefix
 	^self obtainValidSentences: sentencesStack acordingToCondition: [:aSentence | self sentence: aSentence StartsWithPrefix: aPrefix]
 	! !
 
-!SentenceFinderByPrefix methodsFor: 'operations' stamp: 'pa 5/14/2022 17:51:23'!
-obtainValidSentences: sentences acordingToCondition: condition
+!SentenceFinderByPrefix methodsFor: 'operations' stamp: 'FRJ 5/16/2022 10:50:43'!
+obtainValidSentences: sentences acordingToCondition: aCondition
 	
-	| invertedStack validSentences aSentence|
+	| validSentences |
 	
-	invertedStack := OOStack new.
-	validSentences := OrderedCollection new.
+	validSentences := self invertSentencesAndObtainSentencesAcordingToCondition: aCondition.
 	
-	[sentencesStack isEmpty] whileFalse: [
-		aSentence := sentencesStack pop.
-		invertedStack push: aSentence.
-		(condition value: aSentence) ifTrue: [ validSentences add: aSentence ].
-		].
-	
-	[invertedStack isEmpty] whileFalse: [
-		sentencesStack push: invertedStack pop.
-	].
+	self invertSentencesAndObtainSentencesAcordingToCondition: nil.
 	
 	^validSentences.
 	
@@ -526,6 +524,30 @@ sentence: aSentence StartsWithPrefix: aPrefix
 	1 to: (aPrefix size) do: [:index | result := result and: [(aPrefix at: index) = (aSentence at: index)] ].
 
 	^result.! !
+
+
+!SentenceFinderByPrefix methodsFor: 'private' stamp: 'FRJ 5/16/2022 10:52:44'!
+invertSentencesAndObtainSentencesAcordingToCondition: aCondition
+	
+	| invertedStack validSentences aSentence|
+	
+	invertedStack := OOStack new.
+	validSentences := OrderedCollection new.
+	
+	(aCondition isKindOf: BlockClosure) ifFalse: 
+	[^ self invertSentencesAndObtainSentencesAcordingToCondition: [:nothing | false]].
+	
+	[sentencesStack isEmpty] whileFalse: [
+		aSentence := sentencesStack pop.
+		invertedStack push: aSentence.
+		(aCondition value: aSentence) ifTrue: [ validSentences add: aSentence ].
+		].
+	
+	sentencesStack := invertedStack.
+	 
+	^validSentences.
+	
+	! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
