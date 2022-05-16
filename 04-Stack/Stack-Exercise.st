@@ -519,7 +519,6 @@ stackEmptyErrorDescription
 	
 	^ 'Stack is empty'! !
 
-
 
 !classDefinition: #LimitedStack category: 'Stack-Exercise'!
 OOStack subclass: #LimitedStack
@@ -589,10 +588,10 @@ Object subclass: #SentenceFinderByPrefix
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
 
-!SentenceFinderByPrefix methodsFor: 'initialization' stamp: 'pa 5/14/2022 00:28:03'!
+!SentenceFinderByPrefix methodsFor: 'initialization' stamp: 'FRJ 5/16/2022 17:28:22'!
 initialize
 
-	sentencesStack := OOStack new.
+	sentencesStack := UnlimitedStack new.
 	! !
 
 
@@ -654,12 +653,12 @@ sentence: aSentence StartsWithPrefix: aPrefix
 	^result.! !
 
 
-!SentenceFinderByPrefix methodsFor: 'private' stamp: 'FRJ 5/16/2022 10:52:44'!
+!SentenceFinderByPrefix methodsFor: 'private' stamp: 'FRJ 5/16/2022 17:31:22'!
 invertSentencesAndObtainSentencesAcordingToCondition: aCondition
 	
 	| invertedStack validSentences aSentence|
 	
-	invertedStack := OOStack new.
+	invertedStack := UnlimitedStack new.
 	validSentences := OrderedCollection new.
 	
 	(aCondition isKindOf: BlockClosure) ifFalse: 
