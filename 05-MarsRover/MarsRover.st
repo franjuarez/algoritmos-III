@@ -10,68 +10,68 @@ test01TheMarsRoverStartsAtTheCorrectPosition
 
 	self assert: marsRover position = (0@0).! !
 
-!MarsRoverTest methodsFor: 'testing' stamp: 'FRJ 5/29/2022 20:10:37'!
+!MarsRoverTest methodsFor: 'testing' stamp: 'FRJ 5/29/2022 21:04:36'!
 test02TheMarsRoverStartsPointingAtTheRightDirection
 
-	self assert: (marsRover direction isKindOf: North).! !
+	self assert: (marsRover direction isKindOf: NorthSensor).! !
 
-!MarsRoverTest methodsFor: 'testing' stamp: 'FRJ 5/29/2022 20:24:20'!
+!MarsRoverTest methodsFor: 'testing' stamp: 'FRJ 5/29/2022 21:01:43'!
 test03TheMarsRoverDoesNotUnderstandInvalidCommands
 
-	self should: [marsRover command: $h]
+	self should: [marsRover executeCommand: $h]
 	raise: Error
 	withExceptionDo: [:anError | self assert: anError messageText = MarsRover commandNotUnderstoodErrorDescription ].! !
 
-!MarsRoverTest methodsFor: 'testing' stamp: 'FRJ 5/29/2022 20:10:38'!
+!MarsRoverTest methodsFor: 'testing' stamp: 'FRJ 5/29/2022 21:01:43'!
 test04TheMarsRoverMoveForwardCorrectly
 
-	marsRover command: $f.
+	marsRover executeCommand: $f.
 	self assert: marsRover position = (0@1) .! !
 
-!MarsRoverTest methodsFor: 'testing' stamp: 'FRJ 5/29/2022 20:10:38'!
+!MarsRoverTest methodsFor: 'testing' stamp: 'FRJ 5/29/2022 21:01:43'!
 test05TheMarsRoverMoveBackwardsCorrectly
 
-	marsRover command: $b.
+	marsRover executeCommand: $b.
 	self assert: marsRover position = (0@-1) .! !
 
-!MarsRoverTest methodsFor: 'testing' stamp: 'FRJ 5/29/2022 20:10:38'!
+!MarsRoverTest methodsFor: 'testing' stamp: 'FRJ 5/29/2022 21:04:24'!
 test06TheMarsRoverRotatesClockwiseCorrectly
 
-	marsRover command: $r.
-	self assert: (marsRover direction isKindOf: East).! !
+	marsRover executeCommand: $r.
+	self assert: (marsRover direction isKindOf: EastSensor).! !
 
-!MarsRoverTest methodsFor: 'testing' stamp: 'FRJ 5/29/2022 20:10:38'!
+!MarsRoverTest methodsFor: 'testing' stamp: 'FRJ 5/29/2022 21:05:21'!
 test07TheMarsRoverRotatesCounterClockwiseCorrectly
 
-	marsRover command: $l.
-	self assert: (marsRover direction isKindOf: West).! !
+	marsRover executeCommand: $l.
+	self assert: (marsRover direction isKindOf: WestSensor).! !
 
-!MarsRoverTest methodsFor: 'testing' stamp: 'FRJ 5/29/2022 20:17:03'!
+!MarsRoverTest methodsFor: 'testing' stamp: 'FRJ 5/29/2022 21:05:07'!
 test08AfterRotatingMultipleTimesTheMarsRoverIsFacingTheRightDirection
 
-	marsRover commands: 'lllrlr'.
-	self assert: (marsRover direction isKindOf: South).! !
+	marsRover executeCommands: 'lllrlr'.
+	self assert: (marsRover direction isKindOf: SouthSensor).! !
 
-!MarsRoverTest methodsFor: 'testing' stamp: 'FRJ 5/29/2022 20:17:32'!
+!MarsRoverTest methodsFor: 'testing' stamp: 'FRJ 5/29/2022 21:01:29'!
 test09AfterMovingMultipleTimesTheMarsRoverIsInTheRightPosition
 
-	marsRover commands: 'bfbfbb'.
+	marsRover executeCommands: 'bfbfbb'.
 	self assert: marsRover position = (0@-2).! !
 
-!MarsRoverTest methodsFor: 'testing' stamp: 'FRJ 5/29/2022 20:17:53'!
+!MarsRoverTest methodsFor: 'testing' stamp: 'FRJ 5/29/2022 21:05:21'!
 test10AfterRotatingAndMovingMultipleTimesTheMarsRoverEndsUpInTheCorrectPositionAndDirection
 
-	marsRover commands: 'brblllfbr'.
+	marsRover executeCommands: 'brblllfbr'.
 	"360 noscope"
-	self assert: (marsRover position = (-1@-1) and:[marsRover direction isKindOf: West]).! !
+	self assert: (marsRover position = (-1@-1) and:[marsRover direction isKindOf: WestSensor]).! !
 
-!MarsRoverTest methodsFor: 'testing' stamp: 'FRJ 5/29/2022 20:27:09'!
+!MarsRoverTest methodsFor: 'testing' stamp: 'FRJ 5/29/2022 21:04:24'!
 test11AfterAnInvalidCommandTheMarsRoverStopsExecutingTheRest
 
-	self should: [marsRover commands: 'brXfl']
+	self should: [marsRover executeCommands: 'brXfl']
 	raise: Error
 	withExceptionDo: [:anError | self assert: anError messageText = MarsRover commandNotUnderstoodErrorDescription].
-	self assert: [(marsRover position = (0@-1) and:[marsRover direction isKindOf: East])].! !
+	self assert: [(marsRover position = (0@-1) and:[marsRover direction isKindOf: EastSensor])].! !
 
 
 !MarsRoverTest methodsFor: 'setup' stamp: 'FRJ 5/29/2022 20:11:33'!
@@ -80,150 +80,155 @@ setUp
 	marsRover := MarsRover new.! !
 
 
-!classDefinition: #Direction category: 'MarsRover'!
-Object subclass: #Direction
+!classDefinition: #DirectionSensor category: 'MarsRover'!
+Object subclass: #DirectionSensor
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'MarsRover'!
 
-!Direction methodsFor: 'as yet unclassified' stamp: 'pa 5/29/2022 19:07:20'!
-backwardPosition: currentPosition
+!DirectionSensor methodsFor: 'position' stamp: 'FRJ 5/29/2022 20:45:20'!
+backwardPositionFrom: currentPosition
 
 	self subclassResponsibility.! !
 
-!Direction methodsFor: 'as yet unclassified' stamp: 'pa 5/29/2022 19:04:13'!
+!DirectionSensor methodsFor: 'position' stamp: 'FRJ 5/29/2022 20:45:33'!
+forwardPositionFrom: currentPosition
+
+	self subclassResponsibility.! !
+
+
+!DirectionSensor methodsFor: 'direction' stamp: 'pa 5/29/2022 19:04:13'!
 clockwiseDirection
 
 	self subclassResponsibility.! !
 
-!Direction methodsFor: 'as yet unclassified' stamp: 'pa 5/29/2022 19:15:25'!
+!DirectionSensor methodsFor: 'direction' stamp: 'pa 5/29/2022 19:15:25'!
 counterclockwiseDirection
-
-	self subclassResponsibility.! !
-
-!Direction methodsFor: 'as yet unclassified' stamp: 'pa 5/29/2022 19:10:36'!
-forwardPosition: currentPosition
 
 	self subclassResponsibility.! !
 
 
-!classDefinition: #East category: 'MarsRover'!
-Direction subclass: #East
+!classDefinition: #EastSensor category: 'MarsRover'!
+DirectionSensor subclass: #EastSensor
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'MarsRover'!
 
-!East methodsFor: 'as yet unclassified' stamp: 'pa 5/29/2022 19:06:46'!
-backwardPosition: currentPosition
+!EastSensor methodsFor: 'position' stamp: 'FRJ 5/29/2022 20:45:20'!
+backwardPositionFrom: currentPosition
 	
 	^currentPosition - (1@0)! !
 
-!East methodsFor: 'as yet unclassified' stamp: 'pa 5/29/2022 19:16:51'!
-clockwiseDirection
-
-	^South new.
-
-	! !
-
-!East methodsFor: 'as yet unclassified' stamp: 'pa 5/29/2022 19:21:39'!
-counterclockwiseDirection
-
-	^North new.
-! !
-
-!East methodsFor: 'as yet unclassified' stamp: 'pa 5/29/2022 19:20:48'!
-forwardPosition: currentPosition
+!EastSensor methodsFor: 'position' stamp: 'FRJ 5/29/2022 20:45:33'!
+forwardPositionFrom: currentPosition
 
 	^currentPosition + (1@0).
 ! !
 
+
+!EastSensor methodsFor: 'direction' stamp: 'FRJ 5/29/2022 21:05:07'!
+clockwiseDirection
+
+	^SouthSensor new.
+
+	! !
+
+!EastSensor methodsFor: 'direction' stamp: 'FRJ 5/29/2022 21:04:37'!
+counterclockwiseDirection
+
+	^NorthSensor new.
+! !
+
 
-!classDefinition: #North category: 'MarsRover'!
-Direction subclass: #North
+!classDefinition: #NorthSensor category: 'MarsRover'!
+DirectionSensor subclass: #NorthSensor
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'MarsRover'!
 
-!North methodsFor: 'as yet unclassified' stamp: 'pa 5/29/2022 19:08:18'!
-backwardPosition: currentPosition
+!NorthSensor methodsFor: 'direction' stamp: 'FRJ 5/29/2022 21:04:24'!
+clockwiseDirection
+
+	^EastSensor new.! !
+
+!NorthSensor methodsFor: 'direction' stamp: 'FRJ 5/29/2022 21:05:21'!
+counterclockwiseDirection
+
+	^WestSensor new.! !
+
+
+!NorthSensor methodsFor: 'position' stamp: 'FRJ 5/29/2022 20:45:20'!
+backwardPositionFrom: currentPosition
 
 	^currentPosition - (0@1)! !
 
-!North methodsFor: 'as yet unclassified' stamp: 'pa 5/29/2022 19:17:23'!
-clockwiseDirection
-
-	^East new.! !
-
-!North methodsFor: 'as yet unclassified' stamp: 'pa 5/29/2022 19:21:58'!
-counterclockwiseDirection
-
-	^West new.! !
-
-!North methodsFor: 'as yet unclassified' stamp: 'pa 5/29/2022 19:11:56'!
-forwardPosition: currentPosition
+!NorthSensor methodsFor: 'position' stamp: 'FRJ 5/29/2022 20:45:33'!
+forwardPositionFrom: currentPosition
 
 	^currentPosition + (0@1) .
 	! !
 
 
-!classDefinition: #South category: 'MarsRover'!
-Direction subclass: #South
+!classDefinition: #SouthSensor category: 'MarsRover'!
+DirectionSensor subclass: #SouthSensor
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'MarsRover'!
 
-!South methodsFor: 'as yet unclassified' stamp: 'pa 5/29/2022 19:09:09'!
-backwardPosition: currentPosition
+!SouthSensor methodsFor: 'position' stamp: 'FRJ 5/29/2022 20:45:20'!
+backwardPositionFrom: currentPosition
 
 	^currentPosition + (0@1).! !
 
-!South methodsFor: 'as yet unclassified' stamp: 'pa 5/29/2022 19:18:34'!
-clockwiseDirection
-
-	^West new.! !
-
-!South methodsFor: 'as yet unclassified' stamp: 'pa 5/29/2022 19:22:22'!
-counterclockwiseDirection
-
-	^East new.! !
-
-!South methodsFor: 'as yet unclassified' stamp: 'pa 5/29/2022 19:12:21'!
-forwardPosition: currentPosition
+!SouthSensor methodsFor: 'position' stamp: 'FRJ 5/29/2022 20:45:33'!
+forwardPositionFrom: currentPosition
 
 	
 	^currentPosition - (0@1).! !
 
+
+!SouthSensor methodsFor: 'direction' stamp: 'FRJ 5/29/2022 21:05:21'!
+clockwiseDirection
+
+	^WestSensor new.! !
+
+!SouthSensor methodsFor: 'direction' stamp: 'FRJ 5/29/2022 21:04:24'!
+counterclockwiseDirection
+
+	^EastSensor new.! !
+
 
-!classDefinition: #West category: 'MarsRover'!
-Direction subclass: #West
+!classDefinition: #WestSensor category: 'MarsRover'!
+DirectionSensor subclass: #WestSensor
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'MarsRover'!
 
-!West methodsFor: 'as yet unclassified' stamp: 'pa 5/29/2022 19:09:31'!
-backwardPosition: currentPosition
+!WestSensor methodsFor: 'position' stamp: 'FRJ 5/29/2022 20:45:20'!
+backwardPositionFrom: currentPosition
 
 	^currentPosition + (1@0).! !
 
-!West methodsFor: 'as yet unclassified' stamp: 'pa 5/29/2022 19:19:12'!
-clockwiseDirection
-
-	^North new.! !
-
-!West methodsFor: 'as yet unclassified' stamp: 'pa 5/29/2022 19:22:39'!
-counterclockwiseDirection
-
-	^South new.! !
-
-!West methodsFor: 'as yet unclassified' stamp: 'pa 5/29/2022 19:12:40'!
-forwardPosition: currentPosition
+!WestSensor methodsFor: 'position' stamp: 'FRJ 5/29/2022 20:45:33'!
+forwardPositionFrom: currentPosition
 
 	^currentPosition - (1@0).! !
+
+
+!WestSensor methodsFor: 'direction' stamp: 'FRJ 5/29/2022 21:04:36'!
+clockwiseDirection
+
+	^NorthSensor new.! !
+
+!WestSensor methodsFor: 'direction' stamp: 'FRJ 5/29/2022 21:05:07'!
+counterclockwiseDirection
+
+	^SouthSensor new.! !
 
 
 !classDefinition: #MarsRover category: 'MarsRover'!
@@ -233,16 +238,16 @@ Object subclass: #MarsRover
 	poolDictionaries: ''
 	category: 'MarsRover'!
 
-!MarsRover methodsFor: 'movement' stamp: 'pa 5/29/2022 19:31:25'!
+!MarsRover methodsFor: 'movement' stamp: 'FRJ 5/29/2022 20:45:20'!
 moveBackwards
 	
-	currentPosition := currentDirection backwardPosition: currentPosition .
+	currentPosition := currentDirection backwardPositionFrom: currentPosition .
 	! !
 
-!MarsRover methodsFor: 'movement' stamp: 'pa 5/29/2022 19:31:25'!
+!MarsRover methodsFor: 'movement' stamp: 'FRJ 5/29/2022 20:45:33'!
 moveForward
 
-	currentPosition := currentDirection forwardPosition: currentPosition .
+	currentPosition := currentDirection forwardPositionFrom: currentPosition .
 ! !
 
 !MarsRover methodsFor: 'movement' stamp: 'pa 5/29/2022 19:31:25'!
@@ -267,30 +272,31 @@ position
 	! !
 
 
-!MarsRover methodsFor: 'initialization' stamp: 'pa 5/29/2022 19:31:25'!
+!MarsRover methodsFor: 'initialization' stamp: 'FRJ 5/29/2022 21:04:37'!
 initialize 
 	currentPosition := 0@0.
-	currentDirection := North new.
+	currentDirection := NorthSensor new.
 	! !
 
 
-!MarsRover methodsFor: 'as yet unclassified' stamp: 'FRJ 5/29/2022 20:01:25'!
-command: anInstruction
+!MarsRover methodsFor: 'private' stamp: 'FRJ 5/29/2022 21:01:42'!
+executeCommand: aCommand
 
-	anInstruction = $f ifTrue: [^self moveForward].
-	anInstruction = $b ifTrue: [^self moveBackwards ].
-	anInstruction = $r ifTrue: [^self rotateClockWise].
-	anInstruction = $l ifTrue: [^self rotateCounterClockwise].
+	aCommand = $f ifTrue: [^self moveForward].
+	aCommand = $b ifTrue: [^self moveBackwards ].
+	aCommand = $r ifTrue: [^self rotateClockWise].
+	aCommand = $l ifTrue: [^self rotateCounterClockwise].
 	
 	self error: self class commandNotUnderstoodErrorDescription.
 	
 	
 	! !
 
-!MarsRover methodsFor: 'as yet unclassified' stamp: 'FRJ 5/29/2022 20:16:40'!
-commands: instructions
+
+!MarsRover methodsFor: 'command' stamp: 'FRJ 5/29/2022 21:02:15'!
+executeCommands: commands
 	
-	instructions do: [:instruction | self command: instruction ].
+	commands do: [:command | self executeCommand: command ].
 	! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
