@@ -5,68 +5,58 @@ TestCase subclass: #MarsRoverTest
 	poolDictionaries: ''
 	category: 'MarsRover'!
 
-!MarsRoverTest methodsFor: 'testing' stamp: 'FRJ 5/29/2022 20:10:38'!
-test01TheMarsRoverStartsAtTheCorrectPosition
-
-	self assert: marsRover position = (0@0).! !
-
-!MarsRoverTest methodsFor: 'testing' stamp: 'FRJ 5/29/2022 21:04:36'!
-test02TheMarsRoverStartsPointingAtTheRightDirection
-
-	self assert: (marsRover direction isKindOf: NorthSensor).! !
-
-!MarsRoverTest methodsFor: 'testing' stamp: 'FRJ 5/29/2022 21:01:43'!
-test03TheMarsRoverDoesNotUnderstandInvalidCommands
+!MarsRoverTest methodsFor: 'testing' stamp: 'pa 5/30/2022 18:59:57'!
+test01TheMarsRoverDoesNotUnderstandInvalidCommands
 
 	self should: [marsRover executeCommand: $h]
 	raise: Error
 	withExceptionDo: [:anError | self assert: anError messageText = MarsRover commandNotUnderstoodErrorDescription ].! !
 
-!MarsRoverTest methodsFor: 'testing' stamp: 'FRJ 5/29/2022 21:01:43'!
-test04TheMarsRoverMoveForwardCorrectly
+!MarsRoverTest methodsFor: 'testing' stamp: 'pa 5/30/2022 19:00:04'!
+test02TheMarsRoverMoveForwardCorrectly
 
 	marsRover executeCommand: $f.
 	self assert: marsRover position = (0@1) .! !
 
-!MarsRoverTest methodsFor: 'testing' stamp: 'FRJ 5/29/2022 21:01:43'!
-test05TheMarsRoverMoveBackwardsCorrectly
+!MarsRoverTest methodsFor: 'testing' stamp: 'pa 5/30/2022 19:00:23'!
+test03TheMarsRoverMoveBackwardsCorrectly
 
 	marsRover executeCommand: $b.
 	self assert: marsRover position = (0@-1) .! !
 
-!MarsRoverTest methodsFor: 'testing' stamp: 'FRJ 5/29/2022 21:04:24'!
-test06TheMarsRoverRotatesClockwiseCorrectly
+!MarsRoverTest methodsFor: 'testing' stamp: 'pa 5/30/2022 19:00:33'!
+test04TheMarsRoverRotatesClockwiseCorrectly
 
 	marsRover executeCommand: $r.
 	self assert: (marsRover direction isKindOf: EastSensor).! !
 
-!MarsRoverTest methodsFor: 'testing' stamp: 'FRJ 5/29/2022 21:05:21'!
-test07TheMarsRoverRotatesCounterClockwiseCorrectly
+!MarsRoverTest methodsFor: 'testing' stamp: 'pa 5/30/2022 19:00:40'!
+test05TheMarsRoverRotatesCounterClockwiseCorrectly
 
 	marsRover executeCommand: $l.
 	self assert: (marsRover direction isKindOf: WestSensor).! !
 
-!MarsRoverTest methodsFor: 'testing' stamp: 'FRJ 5/29/2022 21:05:07'!
-test08AfterRotatingMultipleTimesTheMarsRoverIsFacingTheRightDirection
+!MarsRoverTest methodsFor: 'testing' stamp: 'pa 5/30/2022 19:00:45'!
+test06AfterRotatingMultipleTimesTheMarsRoverIsFacingTheRightDirection
 
 	marsRover executeCommands: 'lllrlr'.
 	self assert: (marsRover direction isKindOf: SouthSensor).! !
 
-!MarsRoverTest methodsFor: 'testing' stamp: 'FRJ 5/29/2022 21:01:29'!
-test09AfterMovingMultipleTimesTheMarsRoverIsInTheRightPosition
+!MarsRoverTest methodsFor: 'testing' stamp: 'pa 5/30/2022 19:00:51'!
+test07AfterMovingMultipleTimesTheMarsRoverIsInTheRightPosition
 
 	marsRover executeCommands: 'bfbfbb'.
 	self assert: marsRover position = (0@-2).! !
 
-!MarsRoverTest methodsFor: 'testing' stamp: 'FRJ 5/29/2022 21:05:21'!
-test10AfterRotatingAndMovingMultipleTimesTheMarsRoverEndsUpInTheCorrectPositionAndDirection
+!MarsRoverTest methodsFor: 'testing' stamp: 'pa 5/30/2022 19:01:18'!
+test08AfterRotatingAndMovingMultipleTimesTheMarsRoverEndsUpInTheCorrectPositionAndDirection
 
 	marsRover executeCommands: 'brblllfbr'.
 	"360 noscope"
 	self assert: (marsRover position = (-1@-1) and:[marsRover direction isKindOf: WestSensor]).! !
 
-!MarsRoverTest methodsFor: 'testing' stamp: 'FRJ 5/29/2022 21:04:24'!
-test11AfterAnInvalidCommandTheMarsRoverStopsExecutingTheRest
+!MarsRoverTest methodsFor: 'testing' stamp: 'pa 5/30/2022 19:01:13'!
+test09AfterAnInvalidCommandTheMarsRoverStopsExecutingTheRest
 
 	self should: [marsRover executeCommands: 'brXfl']
 	raise: Error
