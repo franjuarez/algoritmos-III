@@ -1,67 +1,153 @@
 !classDefinition: #PortfolioTest category: 'ServiciosFinancieros-Ejercicio'!
 TestCase subclass: #PortfolioTest
-	instanceVariableNames: ''
+	instanceVariableNames: 'portfolio anAccount aPortfolio2 aTransaction1 anAccount2'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
 
-!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'FRJ 6/6/2022 21:30:28'!
-test01TheBalanceOfAnEmptyPortfolioIsZero
-
-	| portfolio |
+!PortfolioTest methodsFor: 'set up' stamp: 'pa 6/7/2022 19:58:03'!
+setUp
 	
 	portfolio := Portfolio new.
+	aPortfolio2 := Portfolio new.
+	anAccount := ReceptiveAccount new.
+	anAccount2 := ReceptiveAccount new.
+	
+	
+	! !
+
+
+!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 19:25:06'!
+test01TheBalanceOfAnEmptyPortfolioIsZero
+
 	self assert: ( portfolio balance = (0 * peso)).
 	! !
 
-!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'FRJ 6/6/2022 21:31:54'!
+!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 19:25:06'!
 test02TheBalanceOfAPortfolioWithAnAccoutWhoseBalanceIsZeroIsZero
 
-	| portfolio anAccount |
 	
-	portfolio := Portfolio new.
 	anAccount := ReceptiveAccount new.
 	portfolio addAccount: anAccount.
 	self assert: ( portfolio balance = (0 * peso)).
 	! !
 
-!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'FRJ 6/6/2022 21:33:14'!
+!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 19:25:06'!
 test03TheBalanceOfAPortfolioWithAnAccountIsTheSameAsTheAccountBalance
 
-	| portfolio anAccount |
-	
-	portfolio := Portfolio new.
-	anAccount := ReceptiveAccount new.
 	Deposit register: (10 * peso) on: anAccount.
 	portfolio addAccount: anAccount.
 	self assert: ( portfolio balance = (10 * peso)).
 	! !
 
-!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'FRJ 6/6/2022 21:34:53'!
+!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 19:58:03'!
 test04TheBalanceOfAPortfolioWithManyAccountsIsTheSumOfTheBalanceOfItsAccounts
-
-	| portfolio anAccount1 anAccount2 |
 	
-	portfolio := Portfolio new.
-	anAccount1 := ReceptiveAccount new.
-	anAccount2 := ReceptiveAccount new.
-	Deposit register: (10 * peso) on: anAccount1.
+	Deposit register: (10 * peso) on: anAccount.
 	Deposit register: (10 * peso) on: anAccount2.
-	portfolio addAccount: anAccount1.
+	portfolio addAccount: anAccount.
 	portfolio addAccount: anAccount2.	
 	self assert: ( portfolio balance = (20 * peso)).
 	! !
 
-!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'FRJ 6/6/2022 21:35:49'!
+!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 19:25:06'!
 test05TheBalanceOfAPortfolioChangesWhenItsAccountsBalanceChanges
 
-	| portfolio anAccount |
 	
-	portfolio := Portfolio new.
-	anAccount := ReceptiveAccount new.
 	portfolio addAccount: anAccount.
 	Deposit register: (10 * peso) on: anAccount.
 	self assert: ( portfolio balance = (10 * peso)).
+	
+	! !
+
+!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 19:57:59'!
+test06TheBalanceOfAPortfolioCompossedOfOtherPortfolioIsCorrect
+	
+	aPortfolio2 addAccount: anAccount.
+	portfolio addAccount: aPortfolio2 .
+	Deposit register: (10 * peso) on: anAccount.
+	self assert: ( portfolio balance = (10 * peso)).
+	
+	! !
+
+!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 19:33:28'!
+test07AnEmptyPortfolioDoesNotHaveAnyTransactionsRegistered
+	
+	| aTransaction |
+	
+	aTransaction := Deposit register: (10 * peso) on: anAccount.
+	self deny: ( portfolio hasRegistered: aTransaction ).
+	
+	! !
+
+!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 19:33:15'!
+test08APortfolioWhichHasAnAccountWithATransactionHasTheTransactionRegistered
+	
+	| aTransaction |
+	
+	aTransaction := Deposit register: (10 * peso) on: anAccount.
+	portfolio addAccount: anAccount .
+	self assert: ( portfolio hasRegistered: aTransaction ).
+	
+	! !
+
+!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 19:58:03'!
+test09APortfolioWhichHasAnAccountWithoutTransactionsDoesNotHaveAnyRegistered
+	
+	| aTransaction |
+	
+	aTransaction := Deposit register: (10 * peso) on: anAccount2.
+	portfolio addAccount: anAccount .
+	self deny: ( portfolio hasRegistered: aTransaction ).
+	
+	! !
+
+!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 19:58:03'!
+test10APortfolioDoesntHaveTransactionsFromOtherAccounts
+	
+	| aTransaction aTransaction2 |
+	
+	aTransaction := Deposit register: (10 * peso) on: anAccount.
+	aTransaction2 := Deposit register: (20 * peso) on: anAccount2. 
+	portfolio addAccount: anAccount .
+	self deny: ( portfolio hasRegistered: aTransaction2 ).
+	
+	! !
+
+!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 19:46:28'!
+test11APortfolioHasAllTheTransactionsOfAnAccountIncludedInIt
+	
+	| aTransaction aTransaction2 |
+	
+	aTransaction := Deposit register: (10 * peso) on: anAccount.
+	aTransaction2 := Deposit register: (20 * peso) on: anAccount. 
+	portfolio addAccount: anAccount .
+	self assert: ( (portfolio hasRegistered: aTransaction) and:[ portfolio hasRegistered: aTransaction2 ] ).
+	
+	! !
+
+!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 19:58:03'!
+test12APortfolioHasTheTransactionsOfAllOfItsAccounts
+	
+	| aTransaction aTransaction2 |
+	
+	aTransaction := Deposit register: (10 * peso) on: anAccount.
+	aTransaction2 := Deposit register: (20 * peso) on: anAccount2. 
+	portfolio addAccount: anAccount .
+	portfolio addAccount: anAccount2 .
+	self assert: ( (portfolio hasRegistered: aTransaction) and:[ portfolio hasRegistered: aTransaction2 ] ).
+	
+	! !
+
+!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 19:57:59'!
+test13APortfolioComposedOfOtherPortfoliosHasAllOfItsPortofoliosTransactions
+	
+	| aTransaction |
+	
+	aTransaction := Deposit register: (10 * peso) on: anAccount. 
+	portfolio addAccount: aPortfolio2 .
+	aPortfolio2 addAccount: anAccount .
+	self assert: ( portfolio hasRegistered: aTransaction ).
 	
 	! !
 
@@ -342,17 +428,24 @@ Object subclass: #Portfolio
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
 
-!Portfolio methodsFor: 'as yet unclassified' stamp: 'FRJ 6/6/2022 21:29:04'!
+!Portfolio methodsFor: 'main protocol' stamp: 'pa 6/7/2022 18:59:51'!
 addAccount: aReceptiveAccount 
 	
-	accounts add: aReceptiveAccount! !
+	accounts add: aReceptiveAccount.! !
 
-!Portfolio methodsFor: 'as yet unclassified' stamp: 'FRJ 6/6/2022 21:28:44'!
+!Portfolio methodsFor: 'main protocol' stamp: 'pa 6/7/2022 19:24:45'!
 balance
 	
 	^accounts sum: [:account | account balance ] ifEmpty: [ ^0 * peso ].! !
 
-!Portfolio methodsFor: 'as yet unclassified' stamp: 'FRJ 6/6/2022 21:28:44'!
+!Portfolio methodsFor: 'main protocol' stamp: 'pa 6/7/2022 19:28:00'!
+hasRegistered: aTransaction 
+	
+	^accounts anySatisfy: [:anAccount | anAccount hasRegistered: aTransaction ].
+	! !
+
+
+!Portfolio methodsFor: 'initialize' stamp: 'pa 6/7/2022 18:59:57'!
 initialize
 
 	accounts := OrderedCollection new.! !
