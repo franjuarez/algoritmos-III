@@ -1,3 +1,71 @@
+!classDefinition: #PortfolioTest category: 'ServiciosFinancieros-Ejercicio'!
+TestCase subclass: #PortfolioTest
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Ejercicio'!
+
+!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'FRJ 6/6/2022 21:30:28'!
+test01TheBalanceOfAnEmptyPortfolioIsZero
+
+	| portfolio |
+	
+	portfolio := Portfolio new.
+	self assert: ( portfolio balance = (0 * peso)).
+	! !
+
+!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'FRJ 6/6/2022 21:31:54'!
+test02TheBalanceOfAPortfolioWithAnAccoutWhoseBalanceIsZeroIsZero
+
+	| portfolio anAccount |
+	
+	portfolio := Portfolio new.
+	anAccount := ReceptiveAccount new.
+	portfolio addAccount: anAccount.
+	self assert: ( portfolio balance = (0 * peso)).
+	! !
+
+!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'FRJ 6/6/2022 21:33:14'!
+test03TheBalanceOfAPortfolioWithAnAccountIsTheSameAsTheAccountBalance
+
+	| portfolio anAccount |
+	
+	portfolio := Portfolio new.
+	anAccount := ReceptiveAccount new.
+	Deposit register: (10 * peso) on: anAccount.
+	portfolio addAccount: anAccount.
+	self assert: ( portfolio balance = (10 * peso)).
+	! !
+
+!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'FRJ 6/6/2022 21:34:53'!
+test04TheBalanceOfAPortfolioWithManyAccountsIsTheSumOfTheBalanceOfItsAccounts
+
+	| portfolio anAccount1 anAccount2 |
+	
+	portfolio := Portfolio new.
+	anAccount1 := ReceptiveAccount new.
+	anAccount2 := ReceptiveAccount new.
+	Deposit register: (10 * peso) on: anAccount1.
+	Deposit register: (10 * peso) on: anAccount2.
+	portfolio addAccount: anAccount1.
+	portfolio addAccount: anAccount2.	
+	self assert: ( portfolio balance = (20 * peso)).
+	! !
+
+!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'FRJ 6/6/2022 21:35:49'!
+test05TheBalanceOfAPortfolioChangesWhenItsAccountsBalanceChanges
+
+	| portfolio anAccount |
+	
+	portfolio := Portfolio new.
+	anAccount := ReceptiveAccount new.
+	portfolio addAccount: anAccount.
+	Deposit register: (10 * peso) on: anAccount.
+	self assert: ( portfolio balance = (10 * peso)).
+	
+	! !
+
+
 !classDefinition: #ReceptiveAccountTest category: 'ServiciosFinancieros-Ejercicio'!
 TestCase subclass: #ReceptiveAccountTest
 	instanceVariableNames: ''
@@ -265,6 +333,29 @@ Withdraw class
 for: aValue
 
 	^ self new initializeFor: aValue ! !
+
+
+!classDefinition: #Portfolio category: 'ServiciosFinancieros-Ejercicio'!
+Object subclass: #Portfolio
+	instanceVariableNames: 'accounts'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Ejercicio'!
+
+!Portfolio methodsFor: 'as yet unclassified' stamp: 'FRJ 6/6/2022 21:29:04'!
+addAccount: aReceptiveAccount 
+	
+	accounts add: aReceptiveAccount! !
+
+!Portfolio methodsFor: 'as yet unclassified' stamp: 'FRJ 6/6/2022 21:28:44'!
+balance
+	
+	^accounts sum: [:account | account balance ] ifEmpty: [ ^0 * peso ].! !
+
+!Portfolio methodsFor: 'as yet unclassified' stamp: 'FRJ 6/6/2022 21:28:44'!
+initialize
+
+	accounts := OrderedCollection new.! !
 
 
 !classDefinition: #ReceptiveAccount category: 'ServiciosFinancieros-Ejercicio'!
