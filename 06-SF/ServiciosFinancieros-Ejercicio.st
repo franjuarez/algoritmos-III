@@ -272,82 +272,81 @@ test07AccountKnowsItsTransactions
 	self assert: (account transactions includes: deposit).
 ! !
 
+
+!classDefinition: #TransferingTest category: 'ServiciosFinancieros-Ejercicio'!
+TestCase subclass: #TransferingTest
+	instanceVariableNames: 'transferingAccount receivingAccount'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Ejercicio'!
 
-!ReceptiveAccountTest methodsFor: 'transfering tests' stamp: 'FRJ 6/4/2022 00:27:53'!
-test08CanNotTransferZeroPesos
-
-	| receivingAccount transferingAccount |
+!TransferingTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 23:18:16'!
+setUp
 	
 	receivingAccount := ReceptiveAccount new.
-	transferingAccount := ReceptiveAccount new.
+	transferingAccount := ReceptiveAccount new.! !
+
+!TransferingTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 23:32:48'!
+test01canNotTransferZeroPesos
 	
-	self should: [ transferingAccount transferAmount: 0 * peso to: receivingAccount ]
+	
+	self should: [Transference from: transferingAccount anAmount: 0 * peso to: receivingAccount  ]
 	raise: Error
-	withExceptionDo: [:anError | 
-	self assert: anError messageText = ReceptiveAccount canNotTransferZeroPesosErrorDescription ].
-	self assert: (transferingAccount balance = (0 * peso) and: [receivingAccount balance = (0 * peso)]).
-	
-! !
+	withExceptionDo: [:anError | self assert: anError messageText = Transference canNotTransferZeroPesosErrorDescription].
+	! !
 
-!ReceptiveAccountTest methodsFor: 'transfering tests' stamp: 'FRJ 6/4/2022 00:32:28'!
-test09MakingAValidTransactionWorksCorrectly
+!TransferingTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 23:33:37'!
+test02transferingBetweenAccountsModifiesTheirBalance
 
-	| receivingAccount transferingAccount |
-	
-	receivingAccount := ReceptiveAccount new.
-	transferingAccount := ReceptiveAccount new.
-	Deposit register: 1 * peso on: transferingAccount.
-	
-	transferingAccount transferAmount: 1 * peso to: receivingAccount.
-	self assert: (transferingAccount balance = (0 * peso) and: [receivingAccount balance = (1 * peso)]).
-	
-! !
+	Deposit register: 10 * peso on: transferingAccount .
+	Transference from: transferingAccount anAmount: 10 * peso to: receivingAccount.
+	self assert: (transferingAccount balance = (0 * peso) and: [receivingAccount balance = (10 * peso)]).! !
 
-!ReceptiveAccountTest methodsFor: 'transfering tests' stamp: 'FRJ 6/4/2022 00:33:16'!
-test10SeBorrara
+!TransferingTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 23:33:54'!
+test03afterTransferingMultipleTimesTheBalanceOfBothAccountsIsCorrect
 
-	| receivingAccount transferingAccount |
-	
-	receivingAccount := ReceptiveAccount new.
-	transferingAccount := ReceptiveAccount new.
-	Deposit register: 10 * peso on: transferingAccount.
-	
-	transferingAccount transferAmount: 10 * peso to: receivingAccount.
-	self assert: (transferingAccount balance = (0 * peso) and: [receivingAccount balance = (10 * peso)]).
-	
-! !
+	Deposit register: 10 * peso on: transferingAccount .
+	Transference from: transferingAccount anAmount: 10 * peso to: receivingAccount.
+	Transference from: transferingAccount anAmount: 10 * peso to: receivingAccount.
+	self assert: (transferingAccount balance = (-10 * peso) and: [receivingAccount balance = (20 * peso)]).! !
 
-!ReceptiveAccountTest methodsFor: 'transfering tests' stamp: 'FRJ 6/4/2022 00:35:52'!
-test11CanNotTransferToTheTransferingAccount
+!TransferingTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 23:34:32'!
+test04canNotTransferToTheSameAccount
 
 	| anAccount |
 	
 	anAccount := ReceptiveAccount new.
-	Deposit register: 10 * peso on: anAccount.
+	Deposit register: 10 * peso on: anAccount .
 	
-	self should: [ anAccount transferAmount: 10 * peso to: anAccount ]
+	self should: [Transference from: transferingAccount anAmount: 10 * peso to: transferingAccount ]
 	raise: Error
-	withExceptionDo: [:anError | 
-	self assert: anError messageText = ReceptiveAccount canNotTransferToTheTransferingAccountErrorDescription ].
-	self assert: (anAccount balance = (10 * peso)).
-	
-! !
+	withExceptionDo: [:anError | self assert: anError messageText = Transference canNotTransferToTheSameAccountErrorDescription].! !
 
-!ReceptiveAccountTest methodsFor: 'transfering tests' stamp: 'FRJ 6/4/2022 00:36:33'!
-test12CanNotTransferANegativeAmountOfPesos
+!TransferingTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 23:35:54'!
+test05canNotTransferANegativeAmount
 
-	| receivingAccount transferingAccount |
-	
-	receivingAccount := ReceptiveAccount new.
-	transferingAccount := ReceptiveAccount new.
-	
-	self should: [ transferingAccount transferAmount: -10 * peso to: receivingAccount ]
+	self should: [Transference from: transferingAccount anAmount: -10 * peso to: receivingAccount]
 	raise: Error
-	withExceptionDo: [:anError | 
-	self assert: anError messageText = ReceptiveAccount canNotTransferANegativeAmountOfPesosErrorDescription ].
-	self assert: (transferingAccount balance = (0 * peso) and: [receivingAccount balance = (0 * peso)]).
+	withExceptionDo: [:anError | self assert: anError messageText = Transference canNotTransferANegativeAmountErrorDescription].! !
+
+!TransferingTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 23:40:27'!
+test06
 	
-! !
+	| transferencia |
+	
+	transferencia := Transference from: transferingAccount anAmount: 10 * peso to: receivingAccount.
+	
+	self assert: transferencia value = (10 * peso). ! !
+
+!TransferingTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 23:40:40'!
+test07
+	
+	| transferencia transferencia2 |
+	
+	transferencia := Transference from: transferingAccount anAmount: 10 * peso to: receivingAccount.
+	transferencia2 := Transference from: transferingAccount anAmount: 5 * peso to: receivingAccount.
+	
+	self assert: (transferencia value = (10 * peso) and: [ transferencia2 value = (5 * peso)]). ! !
 
 
 !classDefinition: #AccountTransaction category: 'ServiciosFinancieros-Ejercicio'!
@@ -451,8 +450,31 @@ for: aValue
 	^ self new initializeFor: aValue ! !
 
 
+!classDefinition: #BankAccount category: 'ServiciosFinancieros-Ejercicio'!
+Object subclass: #BankAccount
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Ejercicio'!
+
+!BankAccount methodsFor: 'main protocol' stamp: 'pa 6/7/2022 22:07:24'!
+balance
+
+	self subclassResponsibility .! !
+
+!BankAccount methodsFor: 'main protocol' stamp: 'pa 6/7/2022 22:08:14'!
+hasRegistered: anAccount
+
+	self subclassResponsibility .! !
+
+!BankAccount methodsFor: 'main protocol' stamp: 'pa 6/7/2022 22:20:55'!
+transactions
+
+	self subclassResponsibility .! !
+
+
 !classDefinition: #Portfolio category: 'ServiciosFinancieros-Ejercicio'!
-Object subclass: #Portfolio
+BankAccount subclass: #Portfolio
 	instanceVariableNames: 'accounts'
 	classVariableNames: ''
 	poolDictionaries: ''
@@ -474,13 +496,10 @@ hasRegistered: aTransaction
 	^accounts anySatisfy: [:anAccount | anAccount hasRegistered: aTransaction ].
 	! !
 
-!Portfolio methodsFor: 'main protocol' stamp: 'pa 6/7/2022 20:50:03'!
+!Portfolio methodsFor: 'main protocol' stamp: 'pa 6/7/2022 22:20:05'!
 transactions
 	
-	| allTransactions |
-	allTransactions := OrderedCollection new.
-	accounts do: [:anAccount | allTransactions addAll: anAccount transactions ].
-	^allTransactions ! !
+	^accounts inject: OrderedCollection new into:[:allTransactions :account | allTransactions addAll: account transactions ]! !
 
 
 !Portfolio methodsFor: 'initialize' stamp: 'pa 6/7/2022 18:59:57'!
@@ -490,8 +509,8 @@ initialize
 
 
 !classDefinition: #ReceptiveAccount category: 'ServiciosFinancieros-Ejercicio'!
-Object subclass: #ReceptiveAccount
-	instanceVariableNames: 'transactions'
+BankAccount subclass: #ReceptiveAccount
+	instanceVariableNames: 'transactions transfered'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
@@ -525,42 +544,50 @@ transactions
 	^ transactions copy! !
 
 
-!ReceptiveAccount methodsFor: 'error handling' stamp: 'FRJ 6/4/2022 00:25:11'!
-raiseErrorWhenTransferingToAnInvalidAccount: anAccount orWithAnvalidAmount: anAmount
+
+!classDefinition: #Transference category: 'ServiciosFinancieros-Ejercicio'!
+Object subclass: #Transference
+	instanceVariableNames: 'value'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Ejercicio'!
 
-	anAmount = 0 ifTrue: [ self error: ReceptiveAccount canNotTransferZeroPesosErrorDescription ].
-	anAmount < 0 ifTrue: [ self error: ReceptiveAccount canNotTransferANegativeAmountOfPesosErrorDescription ].
-	self = anAccount  ifTrue: [ self error: ReceptiveAccount canNotTransferToTheTransferingAccountErrorDescription ]! !
+!Transference methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 23:38:29'!
+initializeWith: anAmount
 
+	value := anAmount .! !
 
-!ReceptiveAccount methodsFor: 'private' stamp: 'FRJ 6/4/2022 00:10:18'!
-withdraw: anAmount andDepositItTo: aReceivingAccount
+!Transference methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 23:39:08'!
+value
 
-	Withdraw register: anAmount on: self.
-	Deposit register: anAmount on: aReceivingAccount! !
-
-
-!ReceptiveAccount methodsFor: 'transfering' stamp: 'FRJ 6/4/2022 00:23:22'!
-transferAmount: anAmount to: aReceivingAccount
-	
-	self raiseErrorWhenTransferingToAnInvalidAccount: aReceivingAccount orWithAnvalidAmount: anAmount.
-	
-	self withdraw: anAmount andDepositItTo: aReceivingAccount.! !
+	^value.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'ReceptiveAccount class' category: 'ServiciosFinancieros-Ejercicio'!
-ReceptiveAccount class
+!classDefinition: 'Transference class' category: 'ServiciosFinancieros-Ejercicio'!
+Transference class
 	instanceVariableNames: ''!
 
-!ReceptiveAccount class methodsFor: 'as yet unclassified' stamp: 'FRJ 6/4/2022 00:16:03'!
-canNotTransferANegativeAmountOfPesosErrorDescription
-	^'Can not transfer a negative amount of Pesos'! !
+!Transference class methodsFor: 'error description' stamp: 'pa 6/7/2022 23:32:19'!
+canNotTransferANegativeAmountErrorDescription
+	
+	^'can not transfer a negative amount'! !
 
-!ReceptiveAccount class methodsFor: 'as yet unclassified' stamp: 'FRJ 6/4/2022 00:04:20'!
-canNotTransferToTheTransferingAccountErrorDescription
-	^'Can not transfer to the transfering account'! !
+!Transference class methodsFor: 'error description' stamp: 'pa 6/7/2022 23:32:10'!
+canNotTransferToTheSameAccountErrorDescription
+	^'can not transfer to the same account'! !
 
-!ReceptiveAccount class methodsFor: 'as yet unclassified' stamp: 'FRJ 6/4/2022 00:04:24'!
+!Transference class methodsFor: 'error description' stamp: 'pa 6/7/2022 23:32:02'!
 canNotTransferZeroPesosErrorDescription
-	^'Can not transfer Zero Pesos'! !
+	^'can not transfer zero pesos'.! !
+
+
+!Transference class methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 23:38:01'!
+from: aTransferingAccount anAmount: anAmount to: aReceivingAccount
+
+	anAmount = 0 ifTrue: [self error: self canNotTransferZeroPesosErrorDescription].
+	anAmount < 0 ifTrue: [self error: self canNotTransferANegativeAmountErrorDescription ].
+	aReceivingAccount = aTransferingAccount ifTrue: [self error: self canNotTransferToTheSameAccountErrorDescription ].
+	Deposit register: anAmount on: aReceivingAccount .
+	Withdraw register: anAmount on: aTransferingAccount .
+	^Transference new initializeWith: anAmount .! !
