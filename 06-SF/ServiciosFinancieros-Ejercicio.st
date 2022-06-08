@@ -1,14 +1,14 @@
 !classDefinition: #PortfolioTest category: 'ServiciosFinancieros-Ejercicio'!
 TestCase subclass: #PortfolioTest
-	instanceVariableNames: 'portfolio anAccount aPortfolio2 aTransaction1 anAccount2'
+	instanceVariableNames: 'aPortfolio anAccount aPortfolio2 anAccount2'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
 
-!PortfolioTest methodsFor: 'set up' stamp: 'pa 6/7/2022 19:58:03'!
+!PortfolioTest methodsFor: 'set up' stamp: 'pa 6/7/2022 20:48:56'!
 setUp
 	
-	portfolio := Portfolio new.
+	aPortfolio := Portfolio new.
 	aPortfolio2 := Portfolio new.
 	anAccount := ReceptiveAccount new.
 	anAccount2 := ReceptiveAccount new.
@@ -17,137 +17,167 @@ setUp
 	! !
 
 
-!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 19:25:06'!
+!PortfolioTest methodsFor: 'testing' stamp: 'pa 6/7/2022 20:48:56'!
 test01TheBalanceOfAnEmptyPortfolioIsZero
 
-	self assert: ( portfolio balance = (0 * peso)).
+	self assert: ( aPortfolio balance = (0 * peso)).
 	! !
 
-!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 19:25:06'!
+!PortfolioTest methodsFor: 'testing' stamp: 'pa 6/7/2022 20:48:56'!
 test02TheBalanceOfAPortfolioWithAnAccoutWhoseBalanceIsZeroIsZero
 
 	
 	anAccount := ReceptiveAccount new.
-	portfolio addAccount: anAccount.
-	self assert: ( portfolio balance = (0 * peso)).
+	aPortfolio addAccount: anAccount.
+	self assert: ( aPortfolio balance = (0 * peso)).
 	! !
 
-!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 19:25:06'!
+!PortfolioTest methodsFor: 'testing' stamp: 'pa 6/7/2022 20:48:56'!
 test03TheBalanceOfAPortfolioWithAnAccountIsTheSameAsTheAccountBalance
 
 	Deposit register: (10 * peso) on: anAccount.
-	portfolio addAccount: anAccount.
-	self assert: ( portfolio balance = (10 * peso)).
+	aPortfolio addAccount: anAccount.
+	self assert: ( aPortfolio balance = (10 * peso)).
 	! !
 
-!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 19:58:03'!
+!PortfolioTest methodsFor: 'testing' stamp: 'pa 6/7/2022 20:48:56'!
 test04TheBalanceOfAPortfolioWithManyAccountsIsTheSumOfTheBalanceOfItsAccounts
 	
 	Deposit register: (10 * peso) on: anAccount.
 	Deposit register: (10 * peso) on: anAccount2.
-	portfolio addAccount: anAccount.
-	portfolio addAccount: anAccount2.	
-	self assert: ( portfolio balance = (20 * peso)).
+	aPortfolio addAccount: anAccount.
+	aPortfolio addAccount: anAccount2.	
+	self assert: ( aPortfolio balance = (20 * peso)).
 	! !
 
-!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 19:25:06'!
+!PortfolioTest methodsFor: 'testing' stamp: 'pa 6/7/2022 20:48:56'!
 test05TheBalanceOfAPortfolioChangesWhenItsAccountsBalanceChanges
 
 	
-	portfolio addAccount: anAccount.
+	aPortfolio addAccount: anAccount.
 	Deposit register: (10 * peso) on: anAccount.
-	self assert: ( portfolio balance = (10 * peso)).
+	self assert: ( aPortfolio balance = (10 * peso)).
 	
 	! !
 
-!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 19:57:59'!
+!PortfolioTest methodsFor: 'testing' stamp: 'pa 6/7/2022 20:48:56'!
 test06TheBalanceOfAPortfolioCompossedOfOtherPortfolioIsCorrect
 	
 	aPortfolio2 addAccount: anAccount.
-	portfolio addAccount: aPortfolio2 .
+	aPortfolio addAccount: aPortfolio2 .
 	Deposit register: (10 * peso) on: anAccount.
-	self assert: ( portfolio balance = (10 * peso)).
+	self assert: ( aPortfolio balance = (10 * peso)).
 	
 	! !
 
-!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 19:33:28'!
+!PortfolioTest methodsFor: 'testing' stamp: 'pa 6/7/2022 20:48:56'!
 test07AnEmptyPortfolioDoesNotHaveAnyTransactionsRegistered
 	
 	| aTransaction |
 	
 	aTransaction := Deposit register: (10 * peso) on: anAccount.
-	self deny: ( portfolio hasRegistered: aTransaction ).
+	self deny: ( aPortfolio hasRegistered: aTransaction ).
 	
 	! !
 
-!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 19:33:15'!
+!PortfolioTest methodsFor: 'testing' stamp: 'pa 6/7/2022 20:48:56'!
 test08APortfolioWhichHasAnAccountWithATransactionHasTheTransactionRegistered
 	
 	| aTransaction |
 	
 	aTransaction := Deposit register: (10 * peso) on: anAccount.
-	portfolio addAccount: anAccount .
-	self assert: ( portfolio hasRegistered: aTransaction ).
+	aPortfolio addAccount: anAccount .
+	self assert: ( aPortfolio hasRegistered: aTransaction ).
 	
 	! !
 
-!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 19:58:03'!
+!PortfolioTest methodsFor: 'testing' stamp: 'pa 6/7/2022 20:48:56'!
 test09APortfolioWhichHasAnAccountWithoutTransactionsDoesNotHaveAnyRegistered
 	
 	| aTransaction |
 	
 	aTransaction := Deposit register: (10 * peso) on: anAccount2.
-	portfolio addAccount: anAccount .
-	self deny: ( portfolio hasRegistered: aTransaction ).
+	aPortfolio addAccount: anAccount .
+	self deny: ( aPortfolio hasRegistered: aTransaction ).
 	
 	! !
 
-!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 19:58:03'!
+!PortfolioTest methodsFor: 'testing' stamp: 'pa 6/7/2022 20:48:56'!
 test10APortfolioDoesntHaveTransactionsFromOtherAccounts
 	
 	| aTransaction aTransaction2 |
 	
 	aTransaction := Deposit register: (10 * peso) on: anAccount.
 	aTransaction2 := Deposit register: (20 * peso) on: anAccount2. 
-	portfolio addAccount: anAccount .
-	self deny: ( portfolio hasRegistered: aTransaction2 ).
+	aPortfolio addAccount: anAccount .
+	self deny: ( aPortfolio hasRegistered: aTransaction2 ).
 	
 	! !
 
-!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 19:46:28'!
+!PortfolioTest methodsFor: 'testing' stamp: 'pa 6/7/2022 20:48:56'!
 test11APortfolioHasAllTheTransactionsOfAnAccountIncludedInIt
 	
 	| aTransaction aTransaction2 |
 	
 	aTransaction := Deposit register: (10 * peso) on: anAccount.
 	aTransaction2 := Deposit register: (20 * peso) on: anAccount. 
-	portfolio addAccount: anAccount .
-	self assert: ( (portfolio hasRegistered: aTransaction) and:[ portfolio hasRegistered: aTransaction2 ] ).
+	aPortfolio addAccount: anAccount .
+	self assert: ( (aPortfolio hasRegistered: aTransaction) and:[ aPortfolio hasRegistered: aTransaction2 ] ).
 	
 	! !
 
-!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 19:58:03'!
+!PortfolioTest methodsFor: 'testing' stamp: 'pa 6/7/2022 20:48:56'!
 test12APortfolioHasTheTransactionsOfAllOfItsAccounts
 	
 	| aTransaction aTransaction2 |
 	
 	aTransaction := Deposit register: (10 * peso) on: anAccount.
 	aTransaction2 := Deposit register: (20 * peso) on: anAccount2. 
-	portfolio addAccount: anAccount .
-	portfolio addAccount: anAccount2 .
-	self assert: ( (portfolio hasRegistered: aTransaction) and:[ portfolio hasRegistered: aTransaction2 ] ).
+	aPortfolio addAccount: anAccount .
+	aPortfolio addAccount: anAccount2 .
+	self assert: ( (aPortfolio hasRegistered: aTransaction) and:[ aPortfolio hasRegistered: aTransaction2 ] ).
 	
 	! !
 
-!PortfolioTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 19:57:59'!
+!PortfolioTest methodsFor: 'testing' stamp: 'pa 6/7/2022 20:48:56'!
 test13APortfolioComposedOfOtherPortfoliosHasAllOfItsPortofoliosTransactions
 	
 	| aTransaction |
 	
 	aTransaction := Deposit register: (10 * peso) on: anAccount. 
-	portfolio addAccount: aPortfolio2 .
+	aPortfolio addAccount: aPortfolio2 .
 	aPortfolio2 addAccount: anAccount .
-	self assert: ( portfolio hasRegistered: aTransaction ).
+	self assert: ( aPortfolio hasRegistered: aTransaction ).
+	
+	! !
+
+!PortfolioTest methodsFor: 'testing' stamp: 'pa 6/7/2022 20:54:38'!
+test14AnEmptyPortfolioDoesNotHaveAnyTransactionsRegistered
+	
+	self assert: ( aPortfolio transactions isEmpty ).
+	
+	! !
+
+!PortfolioTest methodsFor: 'testing' stamp: 'pa 6/7/2022 20:53:58'!
+test15APortfolioWhichHasAnAccountWithATransactionHasItRegistered
+	
+	| aTransaction |
+	
+	aTransaction := Deposit register: (10 * peso) on: anAccount. 
+	aPortfolio addAccount: anAccount .
+	self assert: ( aPortfolio transactions first = aTransaction ).
+	
+	! !
+
+!PortfolioTest methodsFor: 'testing' stamp: 'pa 6/7/2022 20:57:34'!
+test16APortfolioComposedOfAnotherPorfolioHasAllTheTrasnseferencesOfItsPorfolios
+	
+	| aTransaction |
+	
+	aTransaction := Deposit register: (10 * peso) on: anAccount.
+	aPortfolio2 addAccount: anAccount .
+	aPortfolio addAccount: aPortfolio2 .
+	self assert: ( aPortfolio transactions includes: aTransaction ).
 	
 	! !
 
@@ -159,7 +189,7 @@ TestCase subclass: #ReceptiveAccountTest
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
 
-!ReceptiveAccountTest methodsFor: 'account tests' stamp: 'LL 7/1/2021 03:10:43'!
+!ReceptiveAccountTest methodsFor: 'testing' stamp: 'LL 7/1/2021 03:10:43'!
 test01ReceptiveAccountHaveZeroAsBalanceWhenCreated 
 
 	| account |
@@ -169,7 +199,7 @@ test01ReceptiveAccountHaveZeroAsBalanceWhenCreated
 	self assert: 0 equals: account balance
 ! !
 
-!ReceptiveAccountTest methodsFor: 'account tests' stamp: 'LL 7/1/2021 03:14:20'!
+!ReceptiveAccountTest methodsFor: 'testing' stamp: 'LL 7/1/2021 03:14:20'!
 test02DepositIncreasesBalanceOnTransactionValue 
 
 	| account |
@@ -180,7 +210,7 @@ test02DepositIncreasesBalanceOnTransactionValue
 	self assert: 100 * peso equals: account balance
 ! !
 
-!ReceptiveAccountTest methodsFor: 'account tests' stamp: 'LL 7/1/2021 03:14:24'!
+!ReceptiveAccountTest methodsFor: 'testing' stamp: 'LL 7/1/2021 03:14:24'!
 test03WithdrawDecreasesBalanceOnTransactionValue 
 
 	| account |
@@ -192,7 +222,7 @@ test03WithdrawDecreasesBalanceOnTransactionValue
 	self assert: 50 * peso equals: account balance
 ! !
 
-!ReceptiveAccountTest methodsFor: 'account tests' stamp: 'LL 7/1/2021 03:10:14'!
+!ReceptiveAccountTest methodsFor: 'testing' stamp: 'LL 7/1/2021 03:10:14'!
 test04WithdrawValueMustBePositive 
 
 	| account withdrawValue |
@@ -203,7 +233,7 @@ test04WithdrawValueMustBePositive
 	self assert: withdrawValue equals: (Withdraw register: withdrawValue on: account) value
 ! !
 
-!ReceptiveAccountTest methodsFor: 'account tests' stamp: 'LL 7/1/2021 03:10:22'!
+!ReceptiveAccountTest methodsFor: 'testing' stamp: 'LL 7/1/2021 03:10:22'!
 test05ReceptiveAccountKnowsRegisteredTransactions 
 
 	| account deposit withdraw |
@@ -216,7 +246,7 @@ test05ReceptiveAccountKnowsRegisteredTransactions
 	self assert: (account hasRegistered: withdraw).
 ! !
 
-!ReceptiveAccountTest methodsFor: 'account tests' stamp: 'LL 7/1/2021 03:12:14'!
+!ReceptiveAccountTest methodsFor: 'testing' stamp: 'LL 7/1/2021 03:12:14'!
 test06ReceptiveAccountDoNotKnowNotRegisteredTransactions
 
 	| account deposit withdraw |
@@ -229,7 +259,7 @@ test06ReceptiveAccountDoNotKnowNotRegisteredTransactions
 	self deny: (account hasRegistered: withdraw).
 ! !
 
-!ReceptiveAccountTest methodsFor: 'account tests' stamp: 'LL 7/1/2021 03:12:23'!
+!ReceptiveAccountTest methodsFor: 'testing' stamp: 'LL 7/1/2021 03:12:23'!
 test07AccountKnowsItsTransactions 
 
 	| account deposit |
@@ -443,6 +473,14 @@ hasRegistered: aTransaction
 	
 	^accounts anySatisfy: [:anAccount | anAccount hasRegistered: aTransaction ].
 	! !
+
+!Portfolio methodsFor: 'main protocol' stamp: 'pa 6/7/2022 20:50:03'!
+transactions
+	
+	| allTransactions |
+	allTransactions := OrderedCollection new.
+	accounts do: [:anAccount | allTransactions addAll: anAccount transactions ].
+	^allTransactions ! !
 
 
 !Portfolio methodsFor: 'initialize' stamp: 'pa 6/7/2022 18:59:57'!
