@@ -280,13 +280,7 @@ TestCase subclass: #TransferingTest
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
 
-!TransferingTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 23:18:16'!
-setUp
-	
-	receivingAccount := ReceptiveAccount new.
-	transferingAccount := ReceptiveAccount new.! !
-
-!TransferingTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 23:32:48'!
+!TransferingTest methodsFor: 'testing' stamp: 'pa 6/7/2022 23:32:48'!
 test01canNotTransferZeroPesos
 	
 	
@@ -295,14 +289,14 @@ test01canNotTransferZeroPesos
 	withExceptionDo: [:anError | self assert: anError messageText = Transference canNotTransferZeroPesosErrorDescription].
 	! !
 
-!TransferingTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 23:33:37'!
+!TransferingTest methodsFor: 'testing' stamp: 'pa 6/7/2022 23:33:37'!
 test02transferingBetweenAccountsModifiesTheirBalance
 
 	Deposit register: 10 * peso on: transferingAccount .
 	Transference from: transferingAccount anAmount: 10 * peso to: receivingAccount.
 	self assert: (transferingAccount balance = (0 * peso) and: [receivingAccount balance = (10 * peso)]).! !
 
-!TransferingTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 23:33:54'!
+!TransferingTest methodsFor: 'testing' stamp: 'pa 6/7/2022 23:33:54'!
 test03afterTransferingMultipleTimesTheBalanceOfBothAccountsIsCorrect
 
 	Deposit register: 10 * peso on: transferingAccount .
@@ -310,7 +304,7 @@ test03afterTransferingMultipleTimesTheBalanceOfBothAccountsIsCorrect
 	Transference from: transferingAccount anAmount: 10 * peso to: receivingAccount.
 	self assert: (transferingAccount balance = (-10 * peso) and: [receivingAccount balance = (20 * peso)]).! !
 
-!TransferingTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 23:34:32'!
+!TransferingTest methodsFor: 'testing' stamp: 'pa 6/7/2022 23:34:32'!
 test04canNotTransferToTheSameAccount
 
 	| anAccount |
@@ -322,31 +316,56 @@ test04canNotTransferToTheSameAccount
 	raise: Error
 	withExceptionDo: [:anError | self assert: anError messageText = Transference canNotTransferToTheSameAccountErrorDescription].! !
 
-!TransferingTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 23:35:54'!
+!TransferingTest methodsFor: 'testing' stamp: 'pa 6/7/2022 23:35:54'!
 test05canNotTransferANegativeAmount
 
 	self should: [Transference from: transferingAccount anAmount: -10 * peso to: receivingAccount]
 	raise: Error
 	withExceptionDo: [:anError | self assert: anError messageText = Transference canNotTransferANegativeAmountErrorDescription].! !
 
-!TransferingTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 23:40:27'!
-test06
+!TransferingTest methodsFor: 'testing' stamp: 'FRJ 6/8/2022 20:42:28'!
+test06aTransferenceValueIsTheTransferedAmount
 	
-	| transferencia |
+	| transference |
 	
-	transferencia := Transference from: transferingAccount anAmount: 10 * peso to: receivingAccount.
+	transference := Transference from: transferingAccount anAmount: 10 * peso to: receivingAccount.
 	
-	self assert: transferencia value = (10 * peso). ! !
+	self assert: transference value = (10 * peso). ! !
 
-!TransferingTest methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 23:40:40'!
-test07
+!TransferingTest methodsFor: 'testing' stamp: 'FRJ 6/8/2022 22:58:27'!
+test07whenAskingDifferentTransferencesTheValueTheyEachRespondWithTheirOwnValue
 	
-	| transferencia transferencia2 |
+	| transference transference2 |
 	
-	transferencia := Transference from: transferingAccount anAmount: 10 * peso to: receivingAccount.
-	transferencia2 := Transference from: transferingAccount anAmount: 5 * peso to: receivingAccount.
+	transference := Transference from: transferingAccount anAmount: 10 * peso to: receivingAccount.
+	transference2 := Transference from: transferingAccount anAmount: 5 * peso to: receivingAccount.
 	
-	self assert: (transferencia value = (10 * peso) and: [ transferencia2 value = (5 * peso)]). ! !
+	self assert: (transference value = (10 * peso) and: [ transference2 value = (5 * peso)]). ! !
+
+!TransferingTest methodsFor: 'testing' stamp: 'FRJ 6/8/2022 22:58:03'!
+test08withdrawlegKnowsItsCounterleg
+	
+	| transference |
+	
+	transference := Transference from: transferingAccount anAmount: 10 * peso to: receivingAccount.
+	self assert: transference withdrawLeg counterleg = transference depositLeg.
+ ! !
+
+!TransferingTest methodsFor: 'testing' stamp: 'FRJ 6/8/2022 22:58:21'!
+test09depositlegKnowsItsCounterleg
+	
+	| transference |
+	
+	transference := Transference from: transferingAccount anAmount: 10 * peso to: receivingAccount.
+	self assert: transference depositLeg counterleg = transference withdrawLeg.
+ ! !
+
+
+!TransferingTest methodsFor: 'set up' stamp: 'pa 6/7/2022 23:18:16'!
+setUp
+	
+	receivingAccount := ReceptiveAccount new.
+	transferingAccount := ReceptiveAccount new.! !
 
 
 !classDefinition: #AccountTransaction category: 'ServiciosFinancieros-Ejercicio'!
@@ -361,21 +380,11 @@ value
 
 	self subclassResponsibility ! !
 
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'AccountTransaction class' category: 'ServiciosFinancieros-Ejercicio'!
-AccountTransaction class
-	instanceVariableNames: ''!
+!AccountTransaction methodsFor: 'main protocol' stamp: 'FRJ 6/8/2022 23:22:45'!
+modifyBalance: aBalance
 
-!AccountTransaction class methodsFor: 'instance creation' stamp: 'NR 10/17/2019 03:22:00'!
-register: aValue on: account
-
-	| transaction |
-	
-	transaction := self for: aValue.
-	account register: transaction.
-		
-	^ transaction! !
+	self subclassResponsibility ! !
 
 
 !classDefinition: #Deposit category: 'ServiciosFinancieros-Ejercicio'!
@@ -397,7 +406,7 @@ value
 	^ value! !
 
 
-!Deposit methodsFor: 'as yet unclassified' stamp: 'FRJ 6/3/2022 23:27:34'!
+!Deposit methodsFor: 'main protocol' stamp: 'FRJ 6/3/2022 23:27:34'!
 modifyBalance: aBalance
 
 	^aBalance + value.! !
@@ -412,6 +421,62 @@ Deposit class
 for: aValue
 
 	^ self new initializeFor: aValue ! !
+
+!Deposit class methodsFor: 'instance creation' stamp: 'FRJ 6/8/2022 23:07:12'!
+register: aValue on: account
+
+	| transaction |
+	
+	transaction := self for: aValue.
+	account register: transaction.
+		
+	^ transaction! !
+
+
+!classDefinition: #DepositTransference category: 'ServiciosFinancieros-Ejercicio'!
+AccountTransaction subclass: #DepositTransference
+	instanceVariableNames: 'transference'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Ejercicio'!
+
+!DepositTransference methodsFor: 'initialization' stamp: 'FRJ 6/8/2022 23:13:29'!
+initializeWith: aTransference
+
+	transference := aTransference.! !
+
+
+!DepositTransference methodsFor: 'value' stamp: 'FRJ 6/8/2022 23:14:13'!
+value
+
+	^ transference value! !
+
+
+!DepositTransference methodsFor: 'main protocol' stamp: 'FRJ 6/8/2022 23:15:13'!
+counterleg
+	
+	^transference withdrawLeg.! !
+
+!DepositTransference methodsFor: 'main protocol' stamp: 'FRJ 6/8/2022 23:17:15'!
+modifyBalance: aBalance
+
+	^aBalance + self value.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'DepositTransference class' category: 'ServiciosFinancieros-Ejercicio'!
+DepositTransference class
+	instanceVariableNames: ''!
+
+!DepositTransference class methodsFor: 'instance creation' stamp: 'FRJ 6/8/2022 23:13:07'!
+registerWithATransference: aTransference on: anAccount 
+
+	| transference |
+	
+	transference := DepositTransference new.
+	anAccount register: transference.
+		
+	^ transference initializeWith: aTransference.! !
 
 
 !classDefinition: #Withdraw category: 'ServiciosFinancieros-Ejercicio'!
@@ -433,7 +498,7 @@ value
 	^ value! !
 
 
-!Withdraw methodsFor: 'as yet unclassified' stamp: 'FRJ 6/3/2022 23:27:03'!
+!Withdraw methodsFor: 'main protocol' stamp: 'FRJ 6/3/2022 23:27:03'!
 modifyBalance: aBalance
 
 	^aBalance - value.! !
@@ -448,6 +513,62 @@ Withdraw class
 for: aValue
 
 	^ self new initializeFor: aValue ! !
+
+!Withdraw class methodsFor: 'instance creation' stamp: 'FRJ 6/8/2022 23:07:16'!
+register: aValue on: account
+
+	| transaction |
+	
+	transaction := self for: aValue.
+	account register: transaction.
+		
+	^ transaction! !
+
+
+!classDefinition: #WithdrawTransference category: 'ServiciosFinancieros-Ejercicio'!
+AccountTransaction subclass: #WithdrawTransference
+	instanceVariableNames: 'transference'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Ejercicio'!
+
+!WithdrawTransference methodsFor: 'initialization' stamp: 'FRJ 6/8/2022 23:16:12'!
+initializeWith: aTransference
+
+	transference := aTransference.! !
+
+
+!WithdrawTransference methodsFor: 'value' stamp: 'FRJ 6/8/2022 23:16:12'!
+value
+
+	^ transference value! !
+
+
+!WithdrawTransference methodsFor: 'main protocol' stamp: 'FRJ 6/8/2022 23:16:51'!
+counterleg
+	
+	^transference depositLeg .! !
+
+!WithdrawTransference methodsFor: 'main protocol' stamp: 'FRJ 6/8/2022 23:17:10'!
+modifyBalance: aBalance
+
+	^aBalance - self value.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'WithdrawTransference class' category: 'ServiciosFinancieros-Ejercicio'!
+WithdrawTransference class
+	instanceVariableNames: ''!
+
+!WithdrawTransference class methodsFor: 'instance creation' stamp: 'FRJ 6/8/2022 23:16:44'!
+registerWithATransference: aTransference on: anAccount 
+
+	| transference |
+	
+	transference := WithdrawTransference new.
+	anAccount register: transference.
+		
+	^ transference initializeWith: aTransference.! !
 
 
 !classDefinition: #BankAccount category: 'ServiciosFinancieros-Ejercicio'!
@@ -543,24 +664,37 @@ transactions
 
 	^ transactions copy! !
 
-
 
 !classDefinition: #Transference category: 'ServiciosFinancieros-Ejercicio'!
 Object subclass: #Transference
-	instanceVariableNames: 'value'
+	instanceVariableNames: 'value withdrawLeg depositLeg'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
 
-!Transference methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 23:38:29'!
-initializeWith: anAmount
+!Transference methodsFor: 'accesing' stamp: 'FRJ 6/8/2022 20:53:49'!
+depositLeg
+	
+	^depositLeg! !
 
-	value := anAmount .! !
-
-!Transference methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 23:39:08'!
+!Transference methodsFor: 'accesing' stamp: 'pa 6/7/2022 23:39:08'!
 value
 
 	^value.! !
+
+!Transference methodsFor: 'accesing' stamp: 'FRJ 6/8/2022 20:53:33'!
+withdrawLeg
+	
+	^withdrawLeg! !
+
+
+!Transference methodsFor: 'initialization' stamp: 'FRJ 6/8/2022 23:18:44'!
+initializeWithAnAmount: anAmount withDepositLeg: aDepositLeg withWithdrawLeg: aWithdrawLeg
+
+	value := anAmount.
+	depositLeg := aDepositLeg.
+	withdrawLeg := aWithdrawLeg.
+	! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -582,12 +716,24 @@ canNotTransferZeroPesosErrorDescription
 	^'can not transfer zero pesos'.! !
 
 
-!Transference class methodsFor: 'as yet unclassified' stamp: 'pa 6/7/2022 23:38:01'!
-from: aTransferingAccount anAmount: anAmount to: aReceivingAccount
+!Transference class methodsFor: 'error handling' stamp: 'FRJ 6/8/2022 23:32:29'!
+raiseErrorIfAmountIsInvalid: anAmount orIfTheTransferingAccount: aTransferingAccount isEqualToTheReceivingAccount: aReceivingAccount
 
 	anAmount = 0 ifTrue: [self error: self canNotTransferZeroPesosErrorDescription].
 	anAmount < 0 ifTrue: [self error: self canNotTransferANegativeAmountErrorDescription ].
 	aReceivingAccount = aTransferingAccount ifTrue: [self error: self canNotTransferToTheSameAccountErrorDescription ].
-	Deposit register: anAmount on: aReceivingAccount .
-	Withdraw register: anAmount on: aTransferingAccount .
-	^Transference new initializeWith: anAmount .! !
+! !
+
+
+!Transference class methodsFor: 'instance creation' stamp: 'FRJ 6/8/2022 23:32:29'!
+from: aTransferingAccount anAmount: anAmount to: aReceivingAccount
+
+	| depositLeg withdrawLeg transference |
+
+	self raiseErrorIfAmountIsInvalid: anAmount orIfTheTransferingAccount: aTransferingAccount isEqualToTheReceivingAccount: aReceivingAccount.
+
+	transference := Transference new.
+	depositLeg := DepositTransference registerWithATransference: transference on: aReceivingAccount.
+	withdrawLeg := WithdrawTransference registerWithATransference: transference on: aTransferingAccount.
+	^transference initializeWithAnAmount: anAmount withDepositLeg: depositLeg withWithdrawLeg: withdrawLeg.
+	! !
