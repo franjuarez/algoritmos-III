@@ -17,6 +17,28 @@ setUp
 	! !
 
 
+!PortfolioTest methodsFor: 'edge cases' stamp: 'pa 6/9/2022 01:18:15'!
+test01Unportfolionopuedeagregardosveceslamismacuenta
+
+	aPortfolio addAccount: anAccount .
+
+	self should: [aPortfolio addAccount: anAccount]
+	raise: Error
+	withExceptionDo: [:anError | self assert: anError messageText = Portfolio canNotAddAccountErrorDescription].
+	! !
+
+!PortfolioTest methodsFor: 'edge cases' stamp: 'pa 6/9/2022 01:01:24'!
+test02Unportfolionopuedeagregarunacuentayaincluídaenunportfoliopreviamenteagregado.
+
+	aPortfolio addAccount: aPortfolio2 .
+	aPortfolio2 addAccount: anAccount .
+	
+	self should: [aPortfolio addAccount: anAccount]
+	raise: Error
+	withExceptionDo: [:anError | self assert: anError messageText = Portfolio canNotAddAccountErrorDescription ].
+	! !
+
+
 !PortfolioTest methodsFor: 'testing' stamp: 'pa 6/7/2022 20:48:56'!
 test01TheBalanceOfAnEmptyPortfolioIsZero
 
@@ -601,8 +623,10 @@ BankAccount subclass: #Portfolio
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
 
-!Portfolio methodsFor: 'main protocol' stamp: 'pa 6/7/2022 18:59:51'!
+!Portfolio methodsFor: 'main protocol' stamp: 'pa 6/9/2022 00:29:42'!
 addAccount: aReceptiveAccount 
+	
+	self raiseErrorIfAccountCanNotBeAdded: aReceptiveAccount .
 	
 	accounts add: aReceptiveAccount.! !
 
@@ -617,6 +641,19 @@ hasRegistered: aTransaction
 	^accounts anySatisfy: [:anAccount | anAccount hasRegistered: aTransaction ].
 	! !
 
+!Portfolio methodsFor: 'main protocol' stamp: 'pa 6/9/2022 01:09:32'!
+includes: anAccount
+
+	accounts detect: [:account | account includes: anAccount ] ifNone: [^false].
+	^true.! !
+
+!Portfolio methodsFor: 'main protocol' stamp: 'pa 6/9/2022 01:10:48'!
+raiseErrorIfAccountCanNotBeAdded: aReceptiveAccount
+
+	(self includes: aReceptiveAccount) ifTrue: [self error: self class canNotAddAccountErrorDescription].
+	
+	! !
+
 !Portfolio methodsFor: 'main protocol' stamp: 'pa 6/7/2022 22:20:05'!
 transactions
 	
@@ -627,6 +664,17 @@ transactions
 initialize
 
 	accounts := OrderedCollection new.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Portfolio class' category: 'ServiciosFinancieros-Ejercicio'!
+Portfolio class
+	instanceVariableNames: ''!
+
+!Portfolio class methodsFor: 'as yet unclassified' stamp: 'pa 6/9/2022 01:00:35'!
+canNotAddAccountErrorDescription
+
+	^ 'can not add account'! !
 
 
 !classDefinition: #ReceptiveAccount category: 'ServiciosFinancieros-Ejercicio'!
@@ -652,6 +700,11 @@ hasRegistered: aTransaction
 
 	^ transactions includes: aTransaction 
 ! !
+
+!ReceptiveAccount methodsFor: 'main protocol' stamp: 'pa 6/9/2022 01:20:39'!
+includes: aReceptiveAccount
+
+	^self = aReceptiveAccount.! !
 
 !ReceptiveAccount methodsFor: 'main protocol' stamp: 'HernanWilkinson 7/13/2011 18:37'!
 register: aTransaction
