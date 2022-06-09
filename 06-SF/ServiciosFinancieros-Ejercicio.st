@@ -38,6 +38,25 @@ test02Unportfolionopuedeagregarunacuentayaincluídaenunportfoliopreviamenteagrega
 	withExceptionDo: [:anError | self assert: anError messageText = Portfolio canNotAddAccountErrorDescription ].
 	! !
 
+!PortfolioTest methodsFor: 'edge cases' stamp: 'pa 6/9/2022 01:24:45'!
+test03Unportfolionosepuedeincluirasímismo
+	
+	self should: [aPortfolio addAccount: aPortfolio ]
+	raise: Error
+	withExceptionDo: [:anError | self assert: anError messageText = Portfolio canNotAddAccountErrorDescription ].
+	! !
+
+!PortfolioTest methodsFor: 'edge cases' stamp: 'pa 6/9/2022 01:42:36'!
+test04Nopuedoagregarunacuentaaunportfoliocuandoesteúltimoyaeshijodeotroportfoliopadrequeteníadichacuenta
+	
+	aPortfolio addAccount: anAccount .
+	aPortfolio addAccount: aPortfolio2 .
+	
+	self should: [aPortfolio2 addAccount: anAccount ]
+	raise: Error
+	withExceptionDo: [:anError | self assert: anError messageText = Portfolio canNotAddAccountErrorDescription ].
+	! !
+
 
 !PortfolioTest methodsFor: 'testing' stamp: 'pa 6/7/2022 20:48:56'!
 test01TheBalanceOfAnEmptyPortfolioIsZero
@@ -595,7 +614,7 @@ registerWithATransference: aTransference on: anAccount
 
 !classDefinition: #BankAccount category: 'ServiciosFinancieros-Ejercicio'!
 Object subclass: #BankAccount
-	instanceVariableNames: ''
+	instanceVariableNames: 'previousePortfolio'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
@@ -615,6 +634,12 @@ transactions
 
 	self subclassResponsibility .! !
 
+
+!BankAccount methodsFor: 'private' stamp: 'pa 6/9/2022 01:52:13'!
+setPreviousePortfolio: aPortfolio
+
+	previousePortfolio := aPortfolio .! !
+
 
 !classDefinition: #Portfolio category: 'ServiciosFinancieros-Ejercicio'!
 BankAccount subclass: #Portfolio
@@ -623,12 +648,36 @@ BankAccount subclass: #Portfolio
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
 
-!Portfolio methodsFor: 'main protocol' stamp: 'pa 6/9/2022 00:29:42'!
-addAccount: aReceptiveAccount 
+!Portfolio methodsFor: 'errorHandling' stamp: 'pa 6/9/2022 01:55:15'!
+raiseErrorIfAccountCanNotBeAdded: anAccount
+
+	((self includes: anAccount) or: [self isOnPreviousePortfolios: anAccount ])ifTrue: [self error: self class canNotAddAccountErrorDescription].
 	
-	self raiseErrorIfAccountCanNotBeAdded: aReceptiveAccount .
+	! !
+
+
+!Portfolio methodsFor: 'checking' stamp: 'pa 6/9/2022 01:30:49'!
+includes: anAccount
 	
-	accounts add: aReceptiveAccount.! !
+	self = anAccount ifTrue:[^true].
+	accounts detect: [:account | account includes: anAccount ] ifNone: [^false].
+	^true.! !
+
+!Portfolio methodsFor: 'checking' stamp: 'pa 6/9/2022 01:59:06'!
+isOnPreviousePortfolios: anAccount
+	
+	previousePortfolio = nil ifTrue:[^false].
+	accounts detect: [:account | account isOnPreviousePortfolios: anAccount ] ifNone: [^false].
+	^true.! !
+
+
+!Portfolio methodsFor: 'main protocol' stamp: 'pa 6/9/2022 02:13:10'!
+addAccount: anAccount 
+	
+	anAccount setPreviousePortfolio: self.
+	self raiseErrorIfAccountCanNotBeAdded: anAccount .
+	
+	accounts add: anAccount.! !
 
 !Portfolio methodsFor: 'main protocol' stamp: 'pa 6/7/2022 19:24:45'!
 balance
@@ -641,29 +690,17 @@ hasRegistered: aTransaction
 	^accounts anySatisfy: [:anAccount | anAccount hasRegistered: aTransaction ].
 	! !
 
-!Portfolio methodsFor: 'main protocol' stamp: 'pa 6/9/2022 01:09:32'!
-includes: anAccount
-
-	accounts detect: [:account | account includes: anAccount ] ifNone: [^false].
-	^true.! !
-
-!Portfolio methodsFor: 'main protocol' stamp: 'pa 6/9/2022 01:10:48'!
-raiseErrorIfAccountCanNotBeAdded: aReceptiveAccount
-
-	(self includes: aReceptiveAccount) ifTrue: [self error: self class canNotAddAccountErrorDescription].
-	
-	! !
-
 !Portfolio methodsFor: 'main protocol' stamp: 'pa 6/7/2022 22:20:05'!
 transactions
 	
 	^accounts inject: OrderedCollection new into:[:allTransactions :account | allTransactions addAll: account transactions ]! !
 
 
-!Portfolio methodsFor: 'initialize' stamp: 'pa 6/7/2022 18:59:57'!
+!Portfolio methodsFor: 'initialize' stamp: 'pa 6/9/2022 02:07:54'!
 initialize
 
-	accounts := OrderedCollection new.! !
+	accounts := OrderedCollection new.
+	previousePortfolio := nil.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -679,7 +716,7 @@ canNotAddAccountErrorDescription
 
 !classDefinition: #ReceptiveAccount category: 'ServiciosFinancieros-Ejercicio'!
 BankAccount subclass: #ReceptiveAccount
-	instanceVariableNames: 'transactions transfered'
+	instanceVariableNames: 'transactions'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
@@ -688,6 +725,17 @@ BankAccount subclass: #ReceptiveAccount
 initialize
 
 	transactions := OrderedCollection new.! !
+
+
+!ReceptiveAccount methodsFor: 'checking' stamp: 'pa 6/9/2022 01:20:39'!
+includes: aReceptiveAccount
+
+	^self = aReceptiveAccount.! !
+
+!ReceptiveAccount methodsFor: 'checking' stamp: 'pa 6/9/2022 01:59:43'!
+isOnPreviousePortfolios: aReceptiveAccount
+
+	^self = aReceptiveAccount.! !
 
 
 !ReceptiveAccount methodsFor: 'main protocol' stamp: 'FRJ 6/3/2022 23:03:21'!
@@ -700,11 +748,6 @@ hasRegistered: aTransaction
 
 	^ transactions includes: aTransaction 
 ! !
-
-!ReceptiveAccount methodsFor: 'main protocol' stamp: 'pa 6/9/2022 01:20:39'!
-includes: aReceptiveAccount
-
-	^self = aReceptiveAccount.! !
 
 !ReceptiveAccount methodsFor: 'main protocol' stamp: 'HernanWilkinson 7/13/2011 18:37'!
 register: aTransaction
