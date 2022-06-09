@@ -27,8 +27,8 @@ test01CantAddTheSameAccountToTheSamePortfolio
 	withExceptionDo: [:anError | self assert: anError messageText = Portfolio canNotAddAccountErrorDescription].
 	! !
 
-!PortfolioTest methodsFor: 'edge cases' stamp: 'pa 6/9/2022 11:20:02'!
-test02APortfolioCannotAddAnAccountAlreadyIncludedInAPreviouslyAddedPortfolio
+!PortfolioTest methodsFor: 'edge cases' stamp: 'FRJ 6/9/2022 17:05:00'!
+test02APortfolioCanNotAddAnAccountAlreadyIncludedInAPreviouslyAddedPortfolio
 
 	aPortfolio addAccount: aPortfolio2 .
 	aPortfolio2 addAccount: anAccount .
@@ -46,8 +46,8 @@ test03APortfolioCanNotBeIncludedWithinItself
 	withExceptionDo: [:anError | self assert: anError messageText = Portfolio canNotAddAccountErrorDescription ].
 	! !
 
-!PortfolioTest methodsFor: 'edge cases' stamp: 'pa 6/9/2022 11:22:25'!
-test04ICannotAddAnAccountToAPortfolioWhenTheLatterIsAlreadyAChildOfAnotherParentPortfolioThatHadSuchAnAccount
+!PortfolioTest methodsFor: 'edge cases' stamp: 'FRJ 6/9/2022 17:02:54'!
+test04CanNotAddAnAccountToAPortfolioWhenTheLatterIsAlreadyAChildOfAnotherParentPortfolioThatHasSuchAnAccount
 	
 	aPortfolio addAccount: anAccount .
 	aPortfolio addAccount: aPortfolio2 .
@@ -57,8 +57,8 @@ test04ICannotAddAnAccountToAPortfolioWhenTheLatterIsAlreadyAChildOfAnotherParent
 	withExceptionDo: [:anError | self assert: anError messageText = Portfolio canNotAddAccountErrorDescription ].
 	! !
 
-!PortfolioTest methodsFor: 'edge cases' stamp: 'pa 6/9/2022 11:24:12'!
-test05ICanNotAddAPortfolioToAnotherPortfolioIfTheFirstOneIncludesAnAccountThatTheSecondOneAlreadyHas.
+!PortfolioTest methodsFor: 'edge cases' stamp: 'FRJ 6/9/2022 17:03:07'!
+test05CanNotAddAPortfolioToAnotherPortfolioIfTheFirstOneIncludesAnAccountThatTheSecondOneAlreadyHas.
 	
 	aPortfolio addAccount: anAccount .
 	aPortfolio2 addAccount: anAccount .
@@ -659,19 +659,19 @@ BankAccount subclass: #Portfolio
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
 
-!Portfolio methodsFor: 'errorHandling' stamp: 'pa 6/9/2022 10:18:40'!
+!Portfolio methodsFor: 'errorHandling' stamp: 'FRJ 6/9/2022 17:31:24'!
 raiseErrorIfAccountCanNotBeAdded: anAccount
 
-	(self obtainFirstPortfolio includes: anAccount) ifTrue: [self error: self class canNotAddAccountErrorDescription].
+	(self obtainInitialPortfolio includes: anAccount) ifTrue: [self error: self class canNotAddAccountErrorDescription].
 	
 	! !
 
 
-!Portfolio methodsFor: 'checking' stamp: 'pa 6/9/2022 10:46:16'!
+!Portfolio methodsFor: 'checking' stamp: 'FRJ 6/9/2022 17:34:37'!
 includes: aBankAccount
 	
 	self = aBankAccount ifTrue:[^true].
-	^accounts anySatisfy: [:account | aBankAccount potentialColitions anySatisfy: [:potentialColition | account includes: potentialColition ]  ].! !
+	^accounts anySatisfy: [:account | aBankAccount potentialConflictingAccounts anySatisfy: [:potentialConflictingAccount | account includes: potentialConflictingAccount ]].! !
 
 
 !Portfolio methodsFor: 'main protocol' stamp: 'pa 6/9/2022 10:03:28'!
@@ -699,14 +699,14 @@ transactions
 	^accounts inject: OrderedCollection new into:[:allTransactions :account | allTransactions addAll: account transactions ]! !
 
 
-!Portfolio methodsFor: 'accesing' stamp: 'pa 6/9/2022 11:24:51'!
-obtainFirstPortfolio
+!Portfolio methodsFor: 'private accesing' stamp: 'FRJ 6/9/2022 17:31:24'!
+obtainInitialPortfolio
 	
 	fatherPortfolio = nil ifTrue: [^self].
-	^fatherPortfolio obtainFirstPortfolio ! !
+	^fatherPortfolio obtainInitialPortfolio ! !
 
-!Portfolio methodsFor: 'accesing' stamp: 'pa 6/9/2022 10:43:11'!
-potentialColitions
+!Portfolio methodsFor: 'private accesing' stamp: 'FRJ 6/9/2022 17:34:00'!
+potentialConflictingAccounts
 
 	^accounts .! !
 
@@ -771,8 +771,8 @@ transactions
 	^ transactions copy! !
 
 
-!ReceptiveAccount methodsFor: 'accessing' stamp: 'pa 6/9/2022 10:43:29'!
-potentialColitions
+!ReceptiveAccount methodsFor: 'accessing' stamp: 'FRJ 6/9/2022 17:34:00'!
+potentialConflictingAccounts
 
 	^Array with: self.! !
 
