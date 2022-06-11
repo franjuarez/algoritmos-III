@@ -309,25 +309,81 @@ TestCase subclass: #ReportTest
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Solucion'!
 
-!ReportTest methodsFor: 'as yet unclassified' stamp: 'FRJ 6/9/2022 21:53:02'!
+!ReportTest methodsFor: 'as yet unclassified' stamp: 'FRJ 6/10/2022 22:23:40'!
 test01
 
 	| account |
 	
-	account _ ReceptiveAccount new.
+	account := ReceptiveAccount new.
 	
-	self assert: account accountSummary = 'Balance = 0 pesos'.
+	self assert: ('Balance = ' , (0 * peso) asString) equals: account accountSummary first .
 	! !
 
-!ReportTest methodsFor: 'as yet unclassified' stamp: 'FRJ 6/9/2022 21:40:20'!
+!ReportTest methodsFor: 'as yet unclassified' stamp: 'FRJ 6/10/2022 22:23:35'!
 test02
 
 	| account |
 	
-	account _ ReceptiveAccount new.
+	account := ReceptiveAccount new.
 	Deposit register: 10 * peso on: account.
 	
-	self assert: account accountSummary = 'Balance = 10'.
+	self assert: (Array 
+		with: 'Depósito por ', (10 * peso) asString 
+		with: 'Balance = ', (10 * peso) asString)
+		equals: account accountSummary.! !
+
+!ReportTest methodsFor: 'as yet unclassified' stamp: 'FRJ 6/10/2022 22:23:29'!
+test03
+
+	| account |
+	
+	account := ReceptiveAccount new.
+	Withdraw register: 10 * peso on: account.
+	
+	self assert: (Array
+		with: 'Extracción por ', (10 * peso) asString 
+		with: 'Balance = ', (-10 * peso) asString)
+		equals: account accountSummary.! !
+
+!ReportTest methodsFor: 'as yet unclassified' stamp: 'FRJ 6/10/2022 22:23:26'!
+test04
+
+	| originAccount destinationAccount |
+	
+	originAccount := ReceptiveAccount new.
+	destinationAccount := ReceptiveAccount new.
+	Transfer amount: 10 * peso from: originAccount to: destinationAccount.
+	
+	self assert: 	(Array 
+		with: 'Salida por transferencia de ', (10 * peso) asString 
+		with: 'Balance = ', (-10 * peso) asString) 
+		equals: originAccount accountSummary.
+	self assert: (Array 
+		with: 'Entrada por transferencia de ', (10 * peso) asString 
+		with: 'Balance = ', (10 * peso) asString)
+		equals: destinationAccount accountSummary.
+	! !
+
+!ReportTest methodsFor: 'as yet unclassified' stamp: 'FRJ 6/10/2022 22:23:19'!
+test05
+
+	| account account1 |
+	
+	account := ReceptiveAccount new.
+	account1 := ReceptiveAccount new.
+	Deposit register: 100 * peso on: account.
+	Withdraw register: 50 * peso on: account.
+	Transfer amount: 20 * peso from: account to: account1.
+	Transfer amount: 30 * peso from: account1 to: account.
+	
+	self assert: (Array 
+		with: 'Salida por transferencia de ', (10 * peso) asString 
+		with: 'Balance = ', (-10 * peso) asString)
+		equals: account accountSummary.
+	self assert: (Array 
+		with: 'Entrada por transferencia de ', (10 * peso) asString 
+		with: 'Balance = ', (10 * peso) asString)
+		equals: account1 accountSummary
 	! !
 
 
@@ -625,11 +681,11 @@ initialize
 	transactions := OrderedCollection new.! !
 
 
-!ReceptiveAccount methodsFor: 'main protocol' stamp: 'HAW 5/25/2019 11:24:46'!
+!ReceptiveAccount methodsFor: 'main protocol' stamp: 'FRJ 6/10/2022 21:22:35'!
 balance
 
 	^transactions 
-		inject: 0
+		inject: 0 * peso
 		into: [ :currentBalance :transaction | transaction affectBalance: currentBalance ]! !
 
 !ReceptiveAccount methodsFor: 'main protocol' stamp: 'NR 10/21/2019 18:55:56'!
@@ -667,10 +723,12 @@ isComposedBy: anAccount
 	^self = anAccount ! !
 
 
-!ReceptiveAccount methodsFor: 'as yet unclassified' stamp: 'FRJ 6/9/2022 21:48:01'!
+!ReceptiveAccount methodsFor: 'as yet unclassified' stamp: 'FRJ 6/10/2022 20:05:15'!
 accountSummary
 	
-	^ Array with: transactions first ownDescription with: 'Balance = 10 pesos'.! !
+	transactions isEmpty ifTrue: [^Array with: 'Balance = ', (0*peso) asString ].
+	
+	^ Array with: transactions first ownDescription with: 'Balance = ', (self balance) asString.! !
 
 
 !classDefinition: #AccountTransaction category: 'ServiciosFinancieros-Solucion'!
@@ -797,6 +855,11 @@ affectBalance: aBalance
 
 	^aBalance + self value! !
 
+!TransferDepositLeg methodsFor: 'balance' stamp: 'FRJ 6/10/2022 19:58:54'!
+ownDescription
+
+	^'Entrada por transferencia de ', (self value asString). ! !
+
 
 !classDefinition: #TransferWithdrawLeg category: 'ServiciosFinancieros-Solucion'!
 TransferLeg subclass: #TransferWithdrawLeg
@@ -815,6 +878,11 @@ depositLeg
 affectBalance: aBalance
 
 	^aBalance - self value! !
+
+!TransferWithdrawLeg methodsFor: 'balance' stamp: 'FRJ 6/10/2022 19:58:39'!
+ownDescription
+
+	^'Salida por transferencia de ', (self value asString). ! !
 
 
 !classDefinition: #Withdraw category: 'ServiciosFinancieros-Solucion'!
@@ -840,6 +908,11 @@ value
 affectBalance: aBalance
 
 	^aBalance - value! !
+
+!Withdraw methodsFor: 'balance' stamp: 'FRJ 6/10/2022 19:57:45'!
+ownDescription
+
+	^'Extracción por ', (value asString). ! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
