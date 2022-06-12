@@ -315,10 +315,10 @@ setUp
 	account := ReceptiveAccount new.! !
 
 
-!ReportTest methodsFor: 'as yet unclassified' stamp: 'p 6/12/2022 11:18:38'!
+!ReportTest methodsFor: 'as yet unclassified' stamp: 'FRJ 6/12/2022 12:49:44'!
 test01ReportIsCorrectWhenTheAccountDoesNotHaveAnyTransaction
 
-	self assert: ('Balance = ' , (0 * peso) asString) equals: account accountSummary first .
+	self assert: ('Balance = 0') equals: account accountSummary first .
 	! !
 
 !ReportTest methodsFor: 'as yet unclassified' stamp: 'p 6/12/2022 11:18:38'!
@@ -381,15 +381,48 @@ test05ReportIsCorrectWhenThereAreMultipleTransactions
 	
 	! !
 
-!ReportTest methodsFor: 'as yet unclassified' stamp: 'p 6/12/2022 11:24:38'!
-test06
+!ReportTest methodsFor: 'as yet unclassified' stamp: 'FRJ 6/12/2022 13:13:21'!
+test06ReportIsCorrectWhenThePortfolioDoesNotHaveAnyAccounts
 
 	| portfolio |
 	
 	portfolio := Portfolio new.
 	
-	self assert: (portfolio accountSummary)
-		equals: 'Balance = ' , (0 * peso) asString.
+	self assert: 'Balance = 0'
+		equals: (portfolio accountSummary first).
+	
+	! !
+
+!ReportTest methodsFor: 'as yet unclassified' stamp: 'FRJ 6/12/2022 13:25:39'!
+test07PortfolioReportWithOneAccountIsAccountReport
+
+	| portfolio |
+	
+	portfolio := Portfolio with: account.
+	Deposit register: 10 * peso on: account.
+	
+	self assert: (OrderedCollection 
+		with: 'Depósito por ', (10 * peso) asString 
+		with: 'Balance = ', (10 * peso) asString)
+		equals: portfolio accountSummary.
+	
+	! !
+
+!ReportTest methodsFor: 'as yet unclassified' stamp: 'FRJ 6/12/2022 13:26:40'!
+test08ReportIsCorrectWhenItHasMoreThanOneAccount
+
+	| portfolio account1 |
+	
+	account1 := ReceptiveAccount new.
+	portfolio := Portfolio with: account with: account1.
+	Deposit register: 10 * peso on: account.
+	Withdraw register: 10 * peso on: account1.	
+	
+	self assert: (OrderedCollection 
+		with: 'Depósito por ', (10 * peso) asString 
+		with: 'Extracción por ', (10 * peso) asString
+		with: 'Balance = 0')
+		equals: portfolio accountSummary.
 	
 	! !
 
@@ -552,10 +585,35 @@ initialize
 	parents := OrderedCollection new.! !
 
 
-!Portfolio methodsFor: 'main protocol' stamp: 'HAW 5/25/2019 11:19:36'!
+!Portfolio methodsFor: 'main protocol' stamp: 'FRJ 6/12/2022 12:33:21'!
+accountSummary
+	
+	| summary |
+	
+	summary := self accountSummaryTransactions.
+	summary add: 'Balance = ', (self balance) asString.
+	^summary! !
+
+!Portfolio methodsFor: 'main protocol' stamp: 'FRJ 6/12/2022 12:58:58'!
+accountSummaryTransactions
+
+	| accountSumary |
+	accountSumary := OrderedCollection new.
+	accounts isEmpty ifTrue: [ ^accountSumary ].
+	accounts do: [:account | accountSumary addAll: account accountSummaryTransactions ].
+	^accountSumary
+	
+! !
+
+!Portfolio methodsFor: 'main protocol' stamp: 'FRJ 6/12/2022 13:05:23'!
 balance
 	
-	^accounts sum: [ :anAccount | anAccount balance ] ifEmpty: [ 0 ]! !
+	| balance |
+	
+	balance := accounts sum: [ :anAccount | anAccount balance ] ifEmpty: [ 0 ].
+	
+	balance = (0 * peso) ifTrue: [ ^0 ]. "Atado con alambre"
+	^balance.! !
 
 !Portfolio methodsFor: 'main protocol' stamp: 'HAW 5/25/2019 11:28:29'!
 hasRegistered: aTransaction
@@ -647,13 +705,6 @@ signalCanNotAddAccount
 	
 	self error: self class canNotAddAccountErrorMessage! !
 
-
-!Portfolio methodsFor: 'as yet unclassified' stamp: 'p 6/12/2022 11:25:57'!
-accountSummary
-
-	^'Balance = ' , (0 * peso) asString
-	.! !
-
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'Portfolio class' category: 'ServiciosFinancieros-Solucion'!
@@ -695,8 +746,10 @@ initialize
 	transactions := OrderedCollection new.! !
 
 
-!ReceptiveAccount methodsFor: 'main protocol' stamp: 'FRJ 6/10/2022 21:22:35'!
+!ReceptiveAccount methodsFor: 'main protocol' stamp: 'FRJ 6/12/2022 12:43:26'!
 balance
+	
+	transactions ifEmpty: [ ^0 ]. "solucion fea pero se hizo lo que se pudo para arreglar lo provisto"
 
 	^transactions 
 		inject: 0 * peso
@@ -737,7 +790,7 @@ isComposedBy: anAccount
 	^self = anAccount ! !
 
 
-!ReceptiveAccount methodsFor: 'as yet unclassified' stamp: 'p 6/12/2022 11:13:15'!
+!ReceptiveAccount methodsFor: 'as yet unclassified' stamp: 'FRJ 6/12/2022 12:20:57'!
 accountSummary
 	"
 	| accountSumary |
@@ -745,10 +798,18 @@ accountSummary
 	accountSumary := transactions inject: OrderedCollection new into: [:summary :transaction | summary add: transaction ownDescription ].
 	^accountSumary add: 'Balance = ', (self balance) asString."
 	| accountSumary |
-	accountSumary := OrderedCollection new.
-	transactions isEmpty ifTrue: [^OrderedCollection with: 'Balance = ', (0*peso) asString ].
-	transactions do: [:transaction | accountSumary add: transaction ownDescription ].
+	accountSumary := self accountSummaryTransactions.
 	accountSumary add: 'Balance = ', (self balance) asString.
+	^accountSumary 
+	! !
+
+!ReceptiveAccount methodsFor: 'as yet unclassified' stamp: 'FRJ 6/12/2022 12:49:29'!
+accountSummaryTransactions
+	
+	| accountSumary |
+	accountSumary := OrderedCollection new.
+	transactions isEmpty ifTrue: [ ^accountSumary ].
+	transactions do: [:transaction | accountSumary add: transaction ownDescription ].
 	^accountSumary 
 	! !
 
