@@ -304,49 +304,45 @@ test07AccountKnowsItsTransactions
 
 !classDefinition: #ReportTest category: 'ServiciosFinancieros-Solucion'!
 TestCase subclass: #ReportTest
-	instanceVariableNames: ''
+	instanceVariableNames: 'account'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Solucion'!
 
-!ReportTest methodsFor: 'as yet unclassified' stamp: 'FRJ 6/10/2022 22:23:40'!
-test01
+!ReportTest methodsFor: 'set up' stamp: 'p 6/12/2022 11:18:38'!
+setUp
 
-	| account |
-	
-	account := ReceptiveAccount new.
-	
+	account := ReceptiveAccount new.! !
+
+
+!ReportTest methodsFor: 'as yet unclassified' stamp: 'p 6/12/2022 11:18:38'!
+test01ReportIsCorrectWhenTheAccountDoesNotHaveAnyTransaction
+
 	self assert: ('Balance = ' , (0 * peso) asString) equals: account accountSummary first .
 	! !
 
-!ReportTest methodsFor: 'as yet unclassified' stamp: 'FRJ 6/10/2022 22:23:35'!
-test02
+!ReportTest methodsFor: 'as yet unclassified' stamp: 'p 6/12/2022 11:18:38'!
+test02ReportIsCorrectWhenTheAccountHasADeposit
 
-	| account |
-	
-	account := ReceptiveAccount new.
 	Deposit register: 10 * peso on: account.
 	
-	self assert: (Array 
+	self assert: (OrderedCollection 
 		with: 'Depósito por ', (10 * peso) asString 
 		with: 'Balance = ', (10 * peso) asString)
 		equals: account accountSummary.! !
 
-!ReportTest methodsFor: 'as yet unclassified' stamp: 'FRJ 6/10/2022 22:23:29'!
-test03
+!ReportTest methodsFor: 'as yet unclassified' stamp: 'p 6/12/2022 11:18:38'!
+test03ReportIsCorrectWhenTheAccountHasAWithdraw
 
-	| account |
-	
-	account := ReceptiveAccount new.
 	Withdraw register: 10 * peso on: account.
 	
-	self assert: (Array
+	self assert: (OrderedCollection 
 		with: 'Extracción por ', (10 * peso) asString 
 		with: 'Balance = ', (-10 * peso) asString)
 		equals: account accountSummary.! !
 
-!ReportTest methodsFor: 'as yet unclassified' stamp: 'FRJ 6/10/2022 22:23:26'!
-test04
+!ReportTest methodsFor: 'as yet unclassified' stamp: 'p 6/12/2022 11:14:31'!
+test04ReportIsCorrectWhenTheAccountWasPartOfATransference
 
 	| originAccount destinationAccount |
 	
@@ -354,36 +350,47 @@ test04
 	destinationAccount := ReceptiveAccount new.
 	Transfer amount: 10 * peso from: originAccount to: destinationAccount.
 	
-	self assert: 	(Array 
+	self assert: 	(OrderedCollection 
 		with: 'Salida por transferencia de ', (10 * peso) asString 
 		with: 'Balance = ', (-10 * peso) asString) 
 		equals: originAccount accountSummary.
-	self assert: (Array 
+	self assert: (OrderedCollection 
 		with: 'Entrada por transferencia de ', (10 * peso) asString 
 		with: 'Balance = ', (10 * peso) asString)
 		equals: destinationAccount accountSummary.
 	! !
 
-!ReportTest methodsFor: 'as yet unclassified' stamp: 'FRJ 6/10/2022 22:23:19'!
-test05
+!ReportTest methodsFor: 'as yet unclassified' stamp: 'p 6/12/2022 11:18:38'!
+test05ReportIsCorrectWhenThereAreMultipleTransactions
 
-	| account account1 |
-	
-	account := ReceptiveAccount new.
+	| account1 |
+
 	account1 := ReceptiveAccount new.
 	Deposit register: 100 * peso on: account.
 	Withdraw register: 50 * peso on: account.
 	Transfer amount: 20 * peso from: account to: account1.
 	Transfer amount: 30 * peso from: account1 to: account.
 	
-	self assert: (Array 
-		with: 'Salida por transferencia de ', (10 * peso) asString 
-		with: 'Balance = ', (-10 * peso) asString)
+	self assert: (OrderedCollection 
+		with: 'Depósito por ', (100 * peso) asString 
+		with: 'Extracción por ', (50 * peso) asString 
+		with: 'Salida por transferencia de ', (20 * peso) asString 
+		with: 'Entrada por transferencia de ', (30 * peso) asString 
+		with: 'Balance = ', (60 * peso) asString)
 		equals: account accountSummary.
-	self assert: (Array 
-		with: 'Entrada por transferencia de ', (10 * peso) asString 
-		with: 'Balance = ', (10 * peso) asString)
-		equals: account1 accountSummary
+	
+	! !
+
+!ReportTest methodsFor: 'as yet unclassified' stamp: 'p 6/12/2022 11:24:38'!
+test06
+
+	| portfolio |
+	
+	portfolio := Portfolio new.
+	
+	self assert: (portfolio accountSummary)
+		equals: 'Balance = ' , (0 * peso) asString.
+	
 	! !
 
 
@@ -640,6 +647,13 @@ signalCanNotAddAccount
 	
 	self error: self class canNotAddAccountErrorMessage! !
 
+
+!Portfolio methodsFor: 'as yet unclassified' stamp: 'p 6/12/2022 11:25:57'!
+accountSummary
+
+	^'Balance = ' , (0 * peso) asString
+	.! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'Portfolio class' category: 'ServiciosFinancieros-Solucion'!
@@ -723,12 +737,20 @@ isComposedBy: anAccount
 	^self = anAccount ! !
 
 
-!ReceptiveAccount methodsFor: 'as yet unclassified' stamp: 'FRJ 6/10/2022 20:05:15'!
+!ReceptiveAccount methodsFor: 'as yet unclassified' stamp: 'p 6/12/2022 11:13:15'!
 accountSummary
-	
+	"
+	| accountSumary |
 	transactions isEmpty ifTrue: [^Array with: 'Balance = ', (0*peso) asString ].
-	
-	^ Array with: transactions first ownDescription with: 'Balance = ', (self balance) asString.! !
+	accountSumary := transactions inject: OrderedCollection new into: [:summary :transaction | summary add: transaction ownDescription ].
+	^accountSumary add: 'Balance = ', (self balance) asString."
+	| accountSumary |
+	accountSumary := OrderedCollection new.
+	transactions isEmpty ifTrue: [^OrderedCollection with: 'Balance = ', (0*peso) asString ].
+	transactions do: [:transaction | accountSumary add: transaction ownDescription ].
+	accountSumary add: 'Balance = ', (self balance) asString.
+	^accountSumary 
+	! !
 
 
 !classDefinition: #AccountTransaction category: 'ServiciosFinancieros-Solucion'!
