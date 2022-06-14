@@ -304,24 +304,26 @@ test07AccountKnowsItsTransactions
 
 !classDefinition: #ReportTest category: 'ServiciosFinancieros-Solucion'!
 TestCase subclass: #ReportTest
-	instanceVariableNames: 'account transferingAccount receivingAccount portfolio accountSummary portfolioAccountSummary'
+	instanceVariableNames: 'account transferingAccount receivingAccount portfolio accountSummary portfolioAccountSummary receivingAccountTransferNet transferingAccountTransferNet'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Solucion'!
 
-!ReportTest methodsFor: 'set up' stamp: 'pa 6/13/2022 12:51:42'!
+!ReportTest methodsFor: 'set up' stamp: 'pa 6/13/2022 20:43:43'!
 setUp
 
 	account := ReceptiveAccount new.
 	receivingAccount := ReceptiveAccount new.
 	transferingAccount := ReceptiveAccount new.
-	accountSummary := AccountSummary with: account .! !
+	accountSummary := AccountSummary with: account .
+	receivingAccountTransferNet := TransferNet with: receivingAccount .
+	transferingAccountTransferNet := TransferNet with: transferingAccount .! !
 
 
-!ReportTest methodsFor: 'Account summary tests' stamp: 'pa 6/13/2022 12:39:36'!
+!ReportTest methodsFor: 'Account summary tests' stamp: 'pa 6/13/2022 20:05:51'!
 test01AccountSummaryIsCorrectWhenTheAccountDoesNotHaveAnyTransaction
 	
-	self assert: ('Balance = 0') equals: accountSummary summary first.
+	self assert: ('Balance = 0 * pesos') equals: accountSummary summary first.
 	! !
 
 !ReportTest methodsFor: 'Account summary tests' stamp: 'pa 6/13/2022 12:40:02'!
@@ -405,7 +407,7 @@ test07PortfolioAccountSummaryWithOneAccountIsCorrect
 	
 	! !
 
-!ReportTest methodsFor: 'Account summary tests' stamp: 'pa 6/13/2022 12:53:59'!
+!ReportTest methodsFor: 'Account summary tests' stamp: 'pa 6/13/2022 20:08:57'!
 test08PortfolioAccountSummaryIsCorrectWhenItHasMoreThanOneAccount
 
 	| account1 |
@@ -419,68 +421,67 @@ test08PortfolioAccountSummaryIsCorrectWhenItHasMoreThanOneAccount
 	self assert: (OrderedCollection 
 		with: 'Depósito por ', (10 * peso) asString 
 		with: 'Extracción por ', (10 * peso) asString
-		with: 'Balance = 0')
+		with: 'Balance = ', (0 * peso)asString )
 		equals: portfolioAccountSummary summary .
 	
 	! !
 
 
-!ReportTest methodsFor: 'as yet unclassified' stamp: 'pa 6/13/2022 11:37:14'!
+!ReportTest methodsFor: 'Transference net tests' stamp: 'pa 6/13/2022 20:43:43'!
 test01TheTransferNetOfAnAccountWithoutTransactionsIsZero
-
 	
-	self assert: 0 equals: account transferNet.! !
+	self assert: 0 equals: ((TransferNet with: account) summary).! !
 
-!ReportTest methodsFor: 'as yet unclassified' stamp: 'pa 6/13/2022 11:51:34'!
+!ReportTest methodsFor: 'Transference net tests' stamp: 'pa 6/13/2022 20:27:40'!
 test02TheTransferNetOfAnAcountThatHasOnlyATransferenceCorrespondsToTheTransferenceValue
 	
 	Transfer amount: 10 * peso from: transferingAccount to: receivingAccount .
-	self assert: 10 * peso equals: receivingAccount transferNet.
-	self assert: -10 * peso equals: transferingAccount transferNet.
+	self assert: 10 * peso equals: receivingAccountTransferNet summary .
+	self assert: -10 * peso equals: transferingAccountTransferNet summary.
 	! !
 
-!ReportTest methodsFor: 'as yet unclassified' stamp: 'pa 6/13/2022 11:51:34'!
+!ReportTest methodsFor: 'Transference net tests' stamp: 'pa 6/13/2022 20:28:07'!
 test03TheTransferenceNetOfAnAccountThatHasMultipleTransactionsOnlyTakesIntoAccountTheTransferences
 	
 	Deposit register: 5 * peso on: transferingAccount .
 	Withdraw register: 5 * peso on: receivingAccount .
 	Transfer amount: 10 * peso from: transferingAccount to: receivingAccount .
 	
-	self assert: 10 * peso equals: receivingAccount transferNet.
-	self assert: -10 * peso equals: transferingAccount transferNet.
+	self assert: 10 * peso equals: receivingAccountTransferNet summary.
+	self assert: -10 * peso equals: transferingAccountTransferNet summary .
 	! !
 
-!ReportTest methodsFor: 'as yet unclassified' stamp: 'pa 6/13/2022 11:51:34'!
+!ReportTest methodsFor: 'Transference net tests' stamp: 'pa 6/13/2022 20:29:17'!
 test04TheTransferenceNetTakesIntoAccountAllOfTheTransferences
 	
 	Transfer amount: 10 * peso from: transferingAccount to: receivingAccount .
 	Transfer amount: 5 * peso from: transferingAccount to: receivingAccount .	
 	
-	self assert: 15 * peso equals: receivingAccount transferNet.
-	self assert: -15 * peso equals: transferingAccount transferNet.
+	self assert: 15 * peso equals: receivingAccountTransferNet summary .
+	self assert: -15 * peso equals: transferingAccountTransferNet summary .
 	! !
 
-!ReportTest methodsFor: 'as yet unclassified' stamp: 'pa 6/13/2022 12:11:49'!
+!ReportTest methodsFor: 'Transference net tests' stamp: 'pa 6/13/2022 20:43:43'!
 test05TheTransferNetOfAnEmptyPortfolioIsZero
 	
 	portfolio := Portfolio new.
-	self assert: 0 equals: portfolio transferNet.
+	self assert: 0 equals: (TransferNet with: portfolio) summary .
 	! !
 
-!ReportTest methodsFor: 'as yet unclassified' stamp: 'pa 6/13/2022 12:13:00'!
+!ReportTest methodsFor: 'Transference net tests' stamp: 'pa 6/13/2022 20:43:43'!
 test06TheTransferNetOfAPortfolioWithAnAccountIsThatAccountTransferenceNet
 	
 	Transfer amount: 10 * peso from: transferingAccount to: receivingAccount .
 	portfolio := Portfolio with: transferingAccount .
-	self assert: -10 * peso equals: portfolio transferNet.
+	self assert: -10 * peso equals: (TransferNet with: portfolio) summary.
 	! !
 
-!ReportTest methodsFor: 'as yet unclassified' stamp: 'pa 6/13/2022 12:14:12'!
+!ReportTest methodsFor: 'Transference net tests' stamp: 'pa 6/13/2022 20:43:43'!
 test07TheTransferenceNetOfAPortfolioTakesIntoAccountAllOfItsAccounts
 	
 	Transfer amount: 10 * peso from: transferingAccount to: receivingAccount .
 	portfolio := Portfolio with: transferingAccount with: receivingAccount .
-	self assert: 0 equals: portfolio transferNet.
+	self assert: 0 equals: (TransferNet with: portfolio) summary.
 	! !
 
 
@@ -647,22 +648,7 @@ transferNet
 	^accounts sum: [:account | account transferNet ] ifEmpty: [^0].! !
 
 
-!Portfolio methodsFor: 'main protocol' stamp: 'FRJ 6/12/2022 13:05:23'!
-balance
-	
-	| balance |
-	
-	balance := accounts sum: [ :anAccount | anAccount balance ] ifEmpty: [ 0 ].
-	
-	balance = (0 * peso) ifTrue: [ ^0 ]. "Atado con alambre"
-	^balance.! !
-
-!Portfolio methodsFor: 'main protocol' stamp: 'HAW 5/25/2019 11:28:29'!
-hasRegistered: aTransaction
-
-	^accounts anySatisfy: [ :anAccount | anAccount hasRegistered: aTransaction ]! !
-
-!Portfolio methodsFor: 'main protocol' stamp: 'HAW 5/25/2019 11:38:32'!
+!Portfolio methodsFor: 'accesing' stamp: 'HAW 5/25/2019 11:38:32'!
 transactions
 	
 	| transactions |
@@ -671,6 +657,22 @@ transactions
 	accounts do: [ :anAccount | anAccount addTransactionsTo: transactions ].
 	
 	^transactions ! !
+
+!Portfolio methodsFor: 'accesing' stamp: 'pa 6/13/2022 20:42:08'!
+transferenceTransactions
+	
+	^self transactions select:[:transaccion | transaccion isKindOf: TransferLeg ]! !
+
+
+!Portfolio methodsFor: 'main protocol' stamp: 'pa 6/13/2022 20:08:09'!
+balance
+	
+	^accounts sum: [ :anAccount | anAccount balance ] ifEmpty: [ 0 ].! !
+
+!Portfolio methodsFor: 'main protocol' stamp: 'HAW 5/25/2019 11:28:29'!
+hasRegistered: aTransaction
+
+	^accounts anySatisfy: [ :anAccount | anAccount hasRegistered: aTransaction ]! !
 
 
 !Portfolio methodsFor: 'accounts management' stamp: 'HAW 5/25/2019 11:49:20'!
@@ -698,7 +700,7 @@ add: accountToAdd
 	! !
 
 
-!Portfolio methodsFor: 'private' stamp: 'HAW 5/25/2019 11:42:55'!
+!Portfolio methodsFor: 'private' stamp: 'pa 6/13/2022 20:36:27'!
 addTransactionsTo: aCollectionOfTransactions
 
 	accounts do: [ :anAccount | anAccount addTransactionsTo: aCollectionOfTransactions ]! !
@@ -788,16 +790,12 @@ initialize
 	transactions := OrderedCollection new.! !
 
 
-!ReceptiveAccount methodsFor: 'main protocol' stamp: 'pa 6/13/2022 11:30:35'!
+!ReceptiveAccount methodsFor: 'main protocol' stamp: 'pa 6/13/2022 20:10:08'!
 balance
 	
-	| balance | "solucion fea pero se hizo lo que se pudo para arreglar lo provisto"
-	
-	balance := transactions 
+	^transactions 
 		inject: 0 * peso
-		into: [ :currentBalance :transaction | transaction affectBalance: currentBalance ].
-	balance = (0 * peso) ifTrue: [^0]. "atado con alambre"
-	^balance.! !
+		into: [ :currentBalance :transaction | transaction affectBalance: currentBalance ].! !
 
 !ReceptiveAccount methodsFor: 'main protocol' stamp: 'NR 10/21/2019 18:55:56'!
 hasRegistered: aTransaction
@@ -839,12 +837,17 @@ isComposedBy: anAccount
 	^self = anAccount ! !
 
 
-!ReceptiveAccount methodsFor: 'summary' stamp: 'pa 6/13/2022 12:03:46'!
+!ReceptiveAccount methodsFor: 'summary' stamp: 'pa 6/13/2022 20:10:34'!
 transferNet
 	
-	^self transferenceTransactions inject: 0 * peso into: [:transferenceBalance :transference | transference affectBalance: transferenceBalance ]. "atado con alambre"
+	^self transferenceTransactions inject: 0 * peso into: [:transferenceBalance :transference | transference affectBalance: transferenceBalance ]. 
 	
 	! !
+
+
+!ReceptiveAccount methodsFor: 'as yet unclassified' stamp: 'pa 6/13/2022 20:14:17'!
+summary
+	.! !
 
 
 !classDefinition: #AccountTransaction category: 'ServiciosFinancieros-Solucion'!
@@ -864,6 +867,12 @@ value
 affectBalance: aBalance
 
 	self subclassResponsibility ! !
+
+
+!AccountTransaction methodsFor: 'ass yet unclasified' stamp: 'pa 6/13/2022 20:57:14'!
+representation: aReport
+
+	self subclassResponsibility .! !
 
 
 !classDefinition: #Deposit category: 'ServiciosFinancieros-Solucion'!
@@ -890,10 +899,11 @@ affectBalance: aBalance
 
 	^aBalance + value ! !
 
-!Deposit methodsFor: 'balance' stamp: 'FRJ 6/9/2022 21:52:48'!
-ownDescription
 
-	^'Depósito por ', (value asString). ! !
+!Deposit methodsFor: 'as yet unclassified' stamp: 'pa 6/13/2022 20:57:27'!
+representation: aReport
+
+	^aReport depositRepresentation: self.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -971,10 +981,11 @@ affectBalance: aBalance
 
 	^aBalance + self value! !
 
-!TransferDepositLeg methodsFor: 'balance' stamp: 'FRJ 6/10/2022 19:58:54'!
-ownDescription
 
-	^'Entrada por transferencia de ', (self value asString). ! !
+!TransferDepositLeg methodsFor: 'as yet unclassified' stamp: 'pa 6/13/2022 20:58:19'!
+representation: aReport
+
+	^aReport transferDepositRepresentation: self.! !
 
 
 !classDefinition: #TransferWithdrawLeg category: 'ServiciosFinancieros-Solucion'!
@@ -995,10 +1006,11 @@ affectBalance: aBalance
 
 	^aBalance - self value! !
 
-!TransferWithdrawLeg methodsFor: 'balance' stamp: 'FRJ 6/10/2022 19:58:39'!
-ownDescription
 
-	^'Salida por transferencia de ', (self value asString). ! !
+!TransferWithdrawLeg methodsFor: 'as yet unclassified' stamp: 'pa 6/13/2022 20:59:02'!
+representation: aReport
+
+	^aReport transferWithdrawRepresentation: self.! !
 
 
 !classDefinition: #Withdraw category: 'ServiciosFinancieros-Solucion'!
@@ -1025,10 +1037,11 @@ affectBalance: aBalance
 
 	^aBalance - value! !
 
-!Withdraw methodsFor: 'balance' stamp: 'FRJ 6/10/2022 19:57:45'!
-ownDescription
 
-	^'Extracción por ', (value asString). ! !
+!Withdraw methodsFor: 'as yet unclassified' stamp: 'pa 6/13/2022 20:59:18'!
+representation: aReport
+
+	^aReport withdrawRepresentation: self.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -1055,22 +1068,48 @@ register: aValue on: account
 
 !classDefinition: #Report category: 'ServiciosFinancieros-Solucion'!
 Object subclass: #Report
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'ServiciosFinancieros-Solucion'!
-
-
-!classDefinition: #AccountSummary category: 'ServiciosFinancieros-Solucion'!
-Report subclass: #AccountSummary
 	instanceVariableNames: 'bankAccount'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Solucion'!
 
-!AccountSummary methodsFor: 'initialization' stamp: 'pa 6/13/2022 12:22:27'!
+!Report methodsFor: 'transaction representation' stamp: 'pa 6/13/2022 21:07:25'!
+depositRepresentation: aDeposit
+
+	self subclassResponsibility.! !
+
+!Report methodsFor: 'transaction representation' stamp: 'pa 6/13/2022 21:04:11'!
+transferDepositRepresentation: aTransferDeposit.
+
+	self subclassResponsibility.! !
+
+!Report methodsFor: 'transaction representation' stamp: 'pa 6/13/2022 21:09:50'!
+transferWithdrawRepresentation: aTransferWithdraw
+
+	self subclassResponsibility.! !
+
+!Report methodsFor: 'transaction representation' stamp: 'pa 6/13/2022 21:11:31'!
+withdrawRepresentation: aWithdraw
+
+	self subclassResponsibility.! !
+
+
+!Report methodsFor: 'initialize' stamp: 'pa 6/13/2022 20:16:40'!
 initializeWith: aBankAccount 
 	bankAccount := aBankAccount.! !
+
+!Report methodsFor: 'initialize' stamp: 'pa 6/13/2022 20:18:44'!
+summary
+	
+	self subclassResponsibility .! !
+
+
+!classDefinition: #AccountSummary category: 'ServiciosFinancieros-Solucion'!
+Report subclass: #AccountSummary
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Solucion'!
 
 
 !AccountSummary methodsFor: 'as yet unclassified' stamp: 'pa 6/13/2022 12:33:03'!
@@ -1082,14 +1121,35 @@ summary
 	^accountSummary 
 	! !
 
-!AccountSummary methodsFor: 'as yet unclassified' stamp: 'pa 6/13/2022 12:33:02'!
+!AccountSummary methodsFor: 'as yet unclassified' stamp: 'pa 6/13/2022 21:13:37'!
 transactionsSummary
 
 	| accountSummary |
 	accountSummary := OrderedCollection new.
 	bankAccount transactions isEmpty ifTrue: [ ^accountSummary ].
-	bankAccount transactions do: [:transaction | accountSummary add: transaction ownDescription ].
+	bankAccount transactions do: [:transaction | accountSummary add: (transaction representation: self)].
 	^accountSummary ! !
+
+
+!AccountSummary methodsFor: 'transaction representation' stamp: 'pa 6/13/2022 21:07:42'!
+depositRepresentation: aDeposit
+	
+	^'Depósito por ', (aDeposit value asString).! !
+
+!AccountSummary methodsFor: 'transaction representation' stamp: 'pa 6/13/2022 21:09:15'!
+transferDepositRepresentation: aTransferDeposit.
+	
+	^'Entrada por transferencia de ', (aTransferDeposit value asString).! !
+
+!AccountSummary methodsFor: 'transaction representation' stamp: 'pa 6/13/2022 21:11:02'!
+transferWithdrawRepresentation: aTransferWithdraw
+
+	^'Salida por transferencia de ', (aTransferWithdraw value asString).! !
+
+!AccountSummary methodsFor: 'transaction representation' stamp: 'pa 6/13/2022 21:17:17'!
+withdrawRepresentation: aWithdraw
+
+	^'Extracción por ', (aWithdraw value asString). ! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -1102,12 +1162,28 @@ with: aBankAccount
 	^self new initializeWith: aBankAccount ! !
 
 
-!classDefinition: #TransferenceNet category: 'ServiciosFinancieros-Solucion'!
-Report subclass: #TransferenceNet
+!classDefinition: #TransferNet category: 'ServiciosFinancieros-Solucion'!
+Report subclass: #TransferNet
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Solucion'!
+
+!TransferNet methodsFor: 'as yet unclassified' stamp: 'pa 6/13/2022 20:22:35'!
+summary
+
+	^bankAccount transferenceTransactions inject: 0 * peso into: [:transferenceBalance :transference | transference affectBalance: transferenceBalance ]. ! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'TransferNet class' category: 'ServiciosFinancieros-Solucion'!
+TransferNet class
+	instanceVariableNames: ''!
+
+!TransferNet class methodsFor: 'as yet unclassified' stamp: 'pa 6/13/2022 20:21:35'!
+with: aBankAccount
+
+	^self new initializeWith: aBankAccount .! !
 
 
 !classDefinition: #Transfer category: 'ServiciosFinancieros-Solucion'!
