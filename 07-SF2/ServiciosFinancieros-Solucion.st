@@ -239,7 +239,7 @@ test02DepositIncreasesBalanceOnTransactionValue
 	self assert: 100 * peso equals: account balance
 ! !
 
-!ReceptiveAccountTest methodsFor: 'tests' stamp: 'LL 7/1/2021 03:14:24'!
+!ReceptiveAccountTest methodsFor: 'tests' stamp: 'FRJ 6/14/2022 23:08:08'!
 test03WithdrawDecreasesBalanceOnTransactionValue 
 
 	| account |
@@ -247,7 +247,7 @@ test03WithdrawDecreasesBalanceOnTransactionValue
 	account := ReceptiveAccount new.
 	Deposit register: 100 * peso on: account.
 	Withdraw register: 50 * peso on: account.
-		
+	"puto el q lee, te fueste domado"
 	self assert: 50 * peso equals: account balance
 ! !
 
@@ -844,11 +844,6 @@ transferNet
 	
 	! !
 
-
-!ReceptiveAccount methodsFor: 'as yet unclassified' stamp: 'FRJ 6/14/2022 21:13:23'!
-report
-	.! !
-
 
 !classDefinition: #AccountTransaction category: 'ServiciosFinancieros-Solucion'!
 Object subclass: #AccountTransaction
@@ -869,8 +864,8 @@ affectBalance: aBalance
 	self subclassResponsibility ! !
 
 
-!AccountTransaction methodsFor: 'ass yet unclasified' stamp: 'FRJ 6/14/2022 20:59:06'!
-accept: aReport
+!AccountTransaction methodsFor: 'representation' stamp: 'FRJ 6/14/2022 22:46:26'!
+reportRepresentation: aReport
 
 	self subclassResponsibility .! !
 
@@ -900,10 +895,10 @@ affectBalance: aBalance
 	^aBalance + value ! !
 
 
-!Deposit methodsFor: 'as yet unclassified' stamp: 'FRJ 6/14/2022 21:04:10'!
-accept: aVisitor
+!Deposit methodsFor: 'representation' stamp: 'FRJ 6/14/2022 22:52:05'!
+reportRepresentation: aReport
 
-	^aVisitor visitDeposit: self.! !
+	^aReport depositRepresentationOnReport: self.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -939,6 +934,12 @@ AccountTransaction subclass: #TransferLeg
 value
 
 	^transfer value! !
+
+
+!TransferLeg methodsFor: 'representation' stamp: 'FRJ 6/14/2022 23:06:24'!
+reportRepresentation: aReport
+
+	self subclassResponsibility.! !
 
 
 !TransferLeg methodsFor: 'initialization' stamp: 'LL 9/20/2020 22:28:14'!
@@ -982,10 +983,10 @@ affectBalance: aBalance
 	^aBalance + self value! !
 
 
-!TransferDepositLeg methodsFor: 'as yet unclassified' stamp: 'FRJ 6/14/2022 21:03:24'!
-accept: aVisitor
+!TransferDepositLeg methodsFor: 'representation' stamp: 'FRJ 6/14/2022 22:53:21'!
+reportRepresentation: aReport
 
-	^aVisitor visitTransferDeposit: self.! !
+	^aReport transferDepositRepresentationOnReport: self.! !
 
 
 !classDefinition: #TransferWithdrawLeg category: 'ServiciosFinancieros-Solucion'!
@@ -1007,10 +1008,10 @@ affectBalance: aBalance
 	^aBalance - self value! !
 
 
-!TransferWithdrawLeg methodsFor: 'as yet unclassified' stamp: 'FRJ 6/14/2022 21:03:34'!
-accept: aVisitor
+!TransferWithdrawLeg methodsFor: 'representation' stamp: 'FRJ 6/14/2022 22:53:56'!
+reportRepresentation: aReport
 
-	^aVisitor visitTransferWithdraw: self.! !
+	^aReport transferWithdrawRepresentationOnReport: self.! !
 
 
 !classDefinition: #Withdraw category: 'ServiciosFinancieros-Solucion'!
@@ -1038,10 +1039,10 @@ affectBalance: aBalance
 	^aBalance - value! !
 
 
-!Withdraw methodsFor: 'as yet unclassified' stamp: 'FRJ 6/14/2022 21:03:42'!
-accept: aVisitor
+!Withdraw methodsFor: 'representation' stamp: 'FRJ 6/14/2022 22:54:17'!
+reportRepresentation: aReport
 
-	^aVisitor visitrWithdraw: self.! !
+	^aReport withdrawRepresentationOnReport: self.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -1073,23 +1074,23 @@ Object subclass: #Report
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Solucion'!
 
-!Report methodsFor: 'transaction representation' stamp: 'FRJ 6/14/2022 21:00:10'!
-visitDeposit: aDeposit
+!Report methodsFor: 'transaction representation' stamp: 'FRJ 6/14/2022 22:52:05'!
+depositRepresentationOnReport: aDeposit
 
 	self subclassResponsibility.! !
 
-!Report methodsFor: 'transaction representation' stamp: 'FRJ 6/14/2022 20:58:23'!
-visitTransferDeposit: aTransferDeposit.
+!Report methodsFor: 'transaction representation' stamp: 'FRJ 6/14/2022 22:53:21'!
+transferDepositRepresentationOnReport: aTransferDeposit.
 
 	self subclassResponsibility.! !
 
-!Report methodsFor: 'transaction representation' stamp: 'FRJ 6/14/2022 20:59:48'!
-visitTransferWithdraw: aTransferWithdraw
+!Report methodsFor: 'transaction representation' stamp: 'FRJ 6/14/2022 22:53:56'!
+transferWithdrawRepresentationOnReport: aTransferWithdraw
 
 	self subclassResponsibility.! !
 
-!Report methodsFor: 'transaction representation' stamp: 'FRJ 6/14/2022 21:00:00'!
-visitrWithdraw: aWithdraw
+!Report methodsFor: 'transaction representation' stamp: 'FRJ 6/14/2022 22:54:17'!
+withdrawRepresentationOnReport: aWithdraw
 
 	self subclassResponsibility.! !
 
@@ -1122,32 +1123,32 @@ report
 	! !
 
 
-!AccountSummary methodsFor: 'private' stamp: 'FRJ 6/14/2022 21:16:45'!
+!AccountSummary methodsFor: 'private' stamp: 'FRJ 6/14/2022 22:46:26'!
 transactionsSummary
 
 	| accountSummary |
 	accountSummary := OrderedCollection new.
-	bankAccount transactions do: [:transaction | accountSummary add: (transaction accept: self)].
+	bankAccount transactions do: [:transaction | accountSummary add: (transaction reportRepresentation: self)].
 	^accountSummary ! !
 
 
-!AccountSummary methodsFor: '?????' stamp: 'FRJ 6/14/2022 21:00:10'!
-visitDeposit: aDeposit
+!AccountSummary methodsFor: 'representations' stamp: 'FRJ 6/14/2022 22:52:05'!
+depositRepresentationOnReport: aDeposit
 	
 	^'Depósito por ', (aDeposit value asString).! !
 
-!AccountSummary methodsFor: '?????' stamp: 'FRJ 6/14/2022 20:58:23'!
-visitTransferDeposit: aTransferDeposit.
+!AccountSummary methodsFor: 'representations' stamp: 'FRJ 6/14/2022 22:53:21'!
+transferDepositRepresentationOnReport: aTransferDeposit.
 	
 	^'Entrada por transferencia de ', (aTransferDeposit value asString).! !
 
-!AccountSummary methodsFor: '?????' stamp: 'FRJ 6/14/2022 20:59:48'!
-visitTransferWithdraw: aTransferWithdraw
+!AccountSummary methodsFor: 'representations' stamp: 'FRJ 6/14/2022 22:53:56'!
+transferWithdrawRepresentationOnReport: aTransferWithdraw
 
 	^'Salida por transferencia de ', (aTransferWithdraw value asString).! !
 
-!AccountSummary methodsFor: '?????' stamp: 'FRJ 6/14/2022 21:00:00'!
-visitrWithdraw: aWithdraw
+!AccountSummary methodsFor: 'representations' stamp: 'FRJ 6/14/2022 22:54:17'!
+withdrawRepresentationOnReport: aWithdraw
 
 	^'Extracción por ', (aWithdraw value asString). ! !
 
@@ -1160,6 +1161,14 @@ AccountSummary class
 !AccountSummary class methodsFor: 'instance creation' stamp: 'pa 6/13/2022 12:21:52'!
 with: aBankAccount 
 	^self new initializeWith: aBankAccount ! !
+
+
+!classDefinition: #PortfolioTreePrinter category: 'ServiciosFinancieros-Solucion'!
+Report subclass: #PortfolioTreePrinter
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Solucion'!
 
 
 !classDefinition: #TransferNet category: 'ServiciosFinancieros-Solucion'!
