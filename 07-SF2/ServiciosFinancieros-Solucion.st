@@ -1296,10 +1296,15 @@ report
 	! !
 
 
-!AccountSummary methodsFor: 'private' stamp: 'pa 6/16/2022 15:25:11'!
+!AccountSummary methodsFor: 'private' stamp: 'FRJ 6/16/2022 18:48:52'!
+resetTransactionSummary
+
+	^ accountSummary := OrderedCollection new! !
+
+!AccountSummary methodsFor: 'private' stamp: 'FRJ 6/16/2022 18:48:52'!
 transactionsSummary
 
-	accountSummary := OrderedCollection new.
+	self resetTransactionSummary.
 	bankAccount transactionsReportRepresentation: self.! !
 
 
@@ -1342,12 +1347,17 @@ Report subclass: #TransferNet
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Solucion'!
 
-!TransferNet methodsFor: 'main protocol' stamp: 'pa 6/16/2022 12:37:10'!
+!TransferNet methodsFor: 'main protocol' stamp: 'FRJ 6/16/2022 18:50:05'!
 report
 	
-	transferNet := 0.
+	self resetTransferNet.
 	bankAccount transactionsReportRepresentation: self.
 	^transferNet! !
+
+!TransferNet methodsFor: 'main protocol' stamp: 'FRJ 6/16/2022 18:50:05'!
+resetTransferNet
+
+	^ transferNet := 0! !
 
 
 !TransferNet methodsFor: 'transaction representation' stamp: 'pa 6/16/2022 12:37:45'!
@@ -1389,6 +1399,12 @@ Report subclass: #TreePrinterReport
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Solucion'!
 
+!TreePrinterReport methodsFor: 'tree structure - private' stamp: 'FRJ 6/16/2022 18:33:57'!
+resetPortfolioTree
+
+	portfolioTree := ''.
+	treeDepth := 0! !
+
 !TreePrinterReport methodsFor: 'tree structure - private' stamp: 'pa 6/16/2022 14:27:24'!
 spacing
 
@@ -1400,11 +1416,10 @@ spacing
 	! !
 
 
-!TreePrinterReport methodsFor: 'main protocol' stamp: 'pa 6/16/2022 14:50:34'!
+!TreePrinterReport methodsFor: 'main protocol' stamp: 'FRJ 6/16/2022 18:33:57'!
 report
 	
-	portfolioTree := ''.
-	treeDepth := 0.
+	self resetPortfolioTree.
 	bankAccount accountAccept: self.
 	^portfolioTree ! !
 
